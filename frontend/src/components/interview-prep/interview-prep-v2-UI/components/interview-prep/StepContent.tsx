@@ -3,7 +3,8 @@
 import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom";
 
-import { useInterviewPrepStore } from "../../store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../../../store/interview-prep-store";
+import type { InterviewPrepState } from "../../../../../store/interview-prep-store"
 import ViewToggle from "@/components/interview-prep/ui/view-toggle"
 import NavigationButtons from "@/components/interview-prep/ui/navigation-buttons"
 import WelcomeSection from "@/components/interview-prep/sections/welcome-section"
@@ -21,21 +22,23 @@ import OfferNegotiationSection from "@/components/interview-prep/sections/offer-
 import { useInterviewPrepV2Guide } from '../../../../../hooks/useInterviewPrepV2Guide';
 
 export default function StepContent({ stepId }: { stepId: number }) {
-  const { viewMode, setViewMode, setCurrentStep, resumeFile, jobDescription, companyName, industry, resetStore, currentStep: storeCurrentStep } = useInterviewPrepStore()
+  const { viewMode, setViewMode, setCurrentStep, resume, jobDescription, resetStore, currentStep: storeCurrentStep, setIsGeneratingInterviewPrepGuide, setShouldGenerateGuide }: InterviewPrepState = useInterviewPrepStore()
   const navigate = useNavigate();
   const { data: guide, isLoading, error } = useInterviewPrepV2Guide()
 
+  // Log the top-level keys of the guide object when it's available
+  useEffect(() => {
+    if (guide) {
+      console.log('[StepContent Effect] Guide object received. Keys:', JSON.stringify(Object.keys(guide)));
+    }
+  }, [guide]);
+
   // Log Zustand store values relevant to the 'enabled' condition of useInterviewPrepV2Guide
   console.log('[StepContent] Store values for guide query:', {
-    resumeFileExists: !!resumeFile,
     jobDescriptionExists: !!jobDescription,
-    companyNameExists: !!companyName,
-    industryExists: !!industry,
-    isResumeFileObject: resumeFile instanceof File,
-    resumeFile: resumeFile, // Log the actual value for inspection
+    resumeExists: !!resume, // Changed from resumeFileExists to resumeExists
     jobDescription: jobDescription, // Log the actual value
-    companyName: companyName, // Log the actual value
-    industry: industry // Log the actual value
+    resume: resume // Log the actual value for inspection
   });
 
   useEffect(() => {
@@ -50,7 +53,6 @@ export default function StepContent({ stepId }: { stepId: number }) {
     if (stepId === 0 && !sessionStorage.getItem('step0_initialized_for_session')) {
       console.log('[StepContent Effect] Initializing Step 0: Resetting store and guide generation flag.');
       resetStore();
-      sessionStorage.removeItem('guide-generation-triggered');
       sessionStorage.setItem('step0_initialized_for_session', 'true'); // Mark that step 0 has been initialized for this session
     }
 
@@ -104,12 +106,12 @@ export default function StepContent({ stepId }: { stepId: number }) {
     }
     
     // Render the appropriate V2 component based on stepId
-    if (stepId === 2) {
-      // Section 1: Company & Industry Context (Corresponds to guide.section_1_company_industry)
-      // console.log('[renderStepContent] Rendering CompanyIndustrySection for stepId: 2. Guide data for section_1:', guide?.section_1_company_industry);
+    if (stepId === 2) { // This is Company & Industry Analysis (UI Step 1 - after Welcome)
+      console.log('[StepContent render] For stepId 2 (Company/Industry): Raw guide object:', JSON.stringify(guide, null, 2));
+      console.log('[StepContent render] For stepId 2 (Company/Industry): guide.section_1_company_industry:', JSON.stringify(guide?.section_1_company_industry, null, 2));
       return (
         <React.Suspense fallback={fallback}>
-          <CompanyIndustrySection data={guide?.section_1_company_industry} viewMode={viewMode} />
+          <CompanyIndustrySectionV2 data={guide?.section_1_company_industry} viewMode={viewMode} />
         </React.Suspense>
       );
     } else if (stepId === 3) {
@@ -187,8 +189,9 @@ export default function StepContent({ stepId }: { stepId: number }) {
 
       // If moving from step 1 to step 2, set the guide generation trigger flag
       if (stepId === 1) {
-        console.log('[StepContent] Moving from step 1 to 2, triggering guide generation');
-        sessionStorage.setItem('guide-generation-triggered', 'true');
+        console.log('[StepContent] Moving from step 1 to 2, triggering guide generation via store');
+        setShouldGenerateGuide(true);
+        setIsGeneratingInterviewPrepGuide(true);
       }
 
       // Client-side route transition without full page reload
@@ -205,7 +208,6 @@ export default function StepContent({ stepId }: { stepId: number }) {
       if (newStep === 0) {
         console.log('[StepContent handleBack] Navigating back to Step 0. Resetting store explicitly.');
         resetStore(); 
-        sessionStorage.removeItem('guide-generation-triggered');
         sessionStorage.setItem('step0_initialized_for_session', 'true'); // Mark as initialized because we are forcing a reset
       }
       setCurrentStep(newStep);

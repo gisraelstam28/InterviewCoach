@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useInterviewPrepStore } from "../store/interview-prep-store";
+import { useInterviewPrepStore } from "../../../store/interview-prep-store";
 import { Input } from "@/components/ui/input"; // Added for file and text inputs
-import type { ViewMode } from "@/store/interview-prep-store"
+import type { ViewMode } from "../../../store/interview-prep-store"
 import { CheckCircle2Icon } from "lucide-react"
 
 interface WelcomeSectionProps {
@@ -14,26 +14,20 @@ interface WelcomeSectionProps {
 }
 
 export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) {
-  const { 
-    resumeFile, 
-    resumeText, // Directly use resumeText from store
-    jobDescription, 
-    companyName, 
-    industry, 
-    setResumeFile, 
-    setResumeText, // Directly use setResumeText from store
-    setJobDescription, 
-    setCompanyName, 
-    setIndustry, 
-    markStepComplete 
+  const {
+    resume, // Use 'resume' (string) from store
+    jobDescription,
+    setResume, // Use 'setResume' (string setter) from store
+    setJobDescription,
+    markStepComplete
   } = useInterviewPrepStore();
 
   // Local state for inputs
-  const [localResumeText, setLocalResumeText] = useState(resumeText || ''); // For pasted resume text, ensure initial value is not undefined
-  const [localJD, setLocalJD] = useState(jobDescription);
-  const [localCompanyName, setLocalCompanyName] = useState(companyName);
-  const [localIndustry, setLocalIndustry] = useState(industry);
-  // No local state for resumeFile directly, it will be set to store on change
+  const [localResumeText, setLocalResumeText] = useState(resume || '');
+  const [localJD, setLocalJD] = useState(jobDescription || '');
+  // companyName and industry are not in the current store, so local state for them is removed for now
+  // To display uploaded file name:
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<string>("overview");
   
@@ -44,18 +38,17 @@ export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) 
   const handleResumeFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setResumeFile(file); // Update store with File object
-      // Optionally, extract and set resume text if needed immediately
-      // For now, focusing on getting File object to store
+      setUploadedFileName(file.name); // Update local state to display file name
+      // NOTE: This does not currently parse the PDF to text and set it in the store's 'resume: string' field.
+      // For guide generation, resume text must be pasted.
     }
   };
 
   const handleSave = () => {
-    setResumeText(localResumeText); // Save pasted resume text
-    setJobDescription(localJD);
-    setCompanyName(localCompanyName);
-    setIndustry(localIndustry);
-    // resumeFile is already set in store by handleResumeFileChange
+    console.log('[WelcomeSection] handleSave called. localResumeText:', localResumeText, 'localJD:', localJD);
+    setResume(localResumeText); // Save pasted resume text to store's 'resume: string'
+    setJobDescription(localJD); // Save job description to store's 'jobDescription: string'
+    // setCompanyName and setIndustry calls removed as these fields are not in the current store definition
     markStepComplete(0);
   };
 
@@ -174,7 +167,7 @@ export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) 
                 onChange={handleResumeFileChange} 
                 className="mb-2"
               />
-              {resumeFile && <p className="text-sm text-green-600">Resume uploaded: {resumeFile.name}</p>}
+              {uploadedFileName && <p className="text-sm text-green-600">Resume uploaded: {uploadedFileName}</p>}
             </div>
 
             <div>
@@ -212,8 +205,8 @@ export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) 
                 id="companyName" 
                 type="text" 
                 placeholder="Enter company name"
-                value={localCompanyName}
-                onChange={(e) => setLocalCompanyName(e.target.value)}
+                // value={localCompanyName} // Removed as companyName is not in store
+                // onChange={(e) => setLocalCompanyName(e.target.value)} // Removed
               />
             </div>
 
@@ -225,8 +218,8 @@ export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) 
                 id="industry" 
                 type="text" 
                 placeholder="Enter industry (e.g., Technology, Finance)"
-                value={localIndustry}
-                onChange={(e) => setLocalIndustry(e.target.value)}
+                // value={localIndustry} // Removed as industry is not in store
+                // onChange={(e) => setLocalIndustry(e.target.value)} // Removed
               />
             </div>
 

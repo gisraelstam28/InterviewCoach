@@ -1,16 +1,17 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ViewMode } from "@/store/interview-prep-store"
 import { useInterviewPrepStore } from "../store/interview-prep-store"
 import { useEffect } from "react"
+import type { CompanyIndustrySection as CompanyIndustrySectionData } from "../../../types/interview-prep-v2";
+import type { ViewMode } from "@/store/interview-prep-store"; // Assuming ViewMode is exported from here or a similar central types/store file
 
 interface CompanyIndustrySectionProps {
-  data: any
-  viewMode: ViewMode
+  data: CompanyIndustrySectionData | undefined; // Allow undefined to handle cases where guide.section_1_company_industry might not exist
+  viewMode: ViewMode; // Re-add viewMode
 }
 
-export default function CompanyIndustrySection({ data, viewMode }: CompanyIndustrySectionProps) {
+export default function CompanyIndustrySection({ data, viewMode }: CompanyIndustrySectionProps) { // Re-add viewMode
   const { markStepComplete } = useInterviewPrepStore()
 
   // Mark step as viewed/completed
@@ -19,7 +20,7 @@ export default function CompanyIndustrySection({ data, viewMode }: CompanyIndust
   }, [markStepComplete])
 
   // Safely access data with fallbacks for when data is undefined
-  const companyOverview = data?.company_overview || 'No company overview available. Please complete the previous steps to generate this content.';
+  const companyOverview = typeof data?.company_overview === 'string' && data.company_overview ? data.company_overview : 'No company overview available. Please complete the previous steps to generate this content.';
   const recentNews = data?.recent_news || [];
   const industryDrivers = data?.industry_drivers || [];
 

@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { useInterviewPrepStore } from "../../interview-prep-v2-UI/store/interview-prep-store";
+import { useInterviewPrepStore } from "../../../../../store/interview-prep-store"; // Corrected path to main store
 
 const DEBOUNCE_DELAY = 500; // milliseconds
 
 export default function JobDetailsSection() {
+  const storeInstance = useInterviewPrepStore();
+  console.log('[JobDetailsSection] Raw store instance from useInterviewPrepStore():', storeInstance);
+  // Note: To see all state and actions, you might need to access storeInstance.getState() if not directly on the instance
+  // For Zustand, actions are usually directly on the object returned by the hook.
+  console.log('[JobDetailsSection] Keys of raw store instance:', Object.keys(storeInstance));
+  console.log('[JobDetailsSection] storeInstance.setCompanyName directly:', storeInstance.setCompanyName);
+  console.log('[JobDetailsSection] storeInstance.setIndustry directly:', storeInstance.setIndustry);
+
   const {
     jobDescription: storeJobDescription,
     setJobDescription,
@@ -13,7 +21,10 @@ export default function JobDetailsSection() {
     setIndustry,
     // languageComplexity, // TODO: Add to store or remove from component
     // setLanguageComplexity, // TODO: Add to store or remove from component
-  } = useInterviewPrepStore();
+  } = storeInstance;
+
+  console.log('[JobDetailsSection] typeof setCompanyName after destructuring:', typeof setCompanyName);
+  console.log('[JobDetailsSection] typeof setIndustry after destructuring:', typeof setIndustry);
 
   const [localJobDescription, setLocalJobDescription] = useState(storeJobDescription);
   const [localCompanyName, setLocalCompanyName] = useState(storeCompanyName);
@@ -31,6 +42,7 @@ export default function JobDetailsSection() {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (localJobDescription !== storeJobDescription) {
+        console.log('[JobDetailsSection] Debounced: Setting jobDescription in store:', localJobDescription);
         setJobDescription(localJobDescription);
       }
     }, DEBOUNCE_DELAY);
@@ -44,6 +56,7 @@ export default function JobDetailsSection() {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (localCompanyName !== storeCompanyName) {
+        console.log('[JobDetailsSection] Debounced: Setting companyName in store:', localCompanyName);
         setCompanyName(localCompanyName);
       }
     }, DEBOUNCE_DELAY);
@@ -81,7 +94,10 @@ export default function JobDetailsSection() {
         <select
           className="mt-1 block w-full rounded border-gray-300 shadow-sm"
           value={industry}
-          onChange={e => setIndustry(e.target.value)}
+          onChange={e => {
+            console.log('[JobDetailsSection] Setting industry in store:', e.target.value);
+            setIndustry(e.target.value)
+          }}
           required
         >
           <option value="">Select an industry</option>
