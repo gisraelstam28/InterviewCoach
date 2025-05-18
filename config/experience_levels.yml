@@ -1,0 +1,31 @@
+entry_level:
+  patterns:
+    - "\\bintern\\b"
+    - "\\bjunior\\b"
+    - "\\bentry\\b"
+    - "\\btrainee\\b"
+    - "\\bgraduate\\b"
+    - "\\bjr\\b"
+  min_years: 0
+  max_years: 3
+
+mid_level:
+  patterns:
+    - "\\bmid\\b"
+    - "\\bassociate\\b"
+    - "\\bintermediate\\b"
+    - "\\bexperienced\\b"
+  min_years: 3
+  max_years: 7
+
+senior_level:
+  patterns:
+    - "\\bsenior\\b"
+    - "\\bprincipal\\b"
+    - "\\blead\\b"
+    - "\\bdirector\\b"
+    - "\\bvp\\b"
+    - "\\bstaff\\b"
+    - "\\bsr\\b"
+  min_years: 7
+  max_years: 100

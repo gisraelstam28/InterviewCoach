@@ -1,0 +1,16 @@
+fastapi==0.115.2
+uvicorn[standard]==0.34.0
+openai>=1.0.0
+langchain==0.3.23
+langchain-community==0.3.21
+langchain-core==0.3.53
+langchain-openai==0.3.13
+python-dotenv
+python-multipart
+sendgrid==6.11.0
+requests==2.31.0
+fpdf
+PyPDF2==3.0.1
+httpx==0.27.0
+google-search-results # Added for SerpAPI
+pytest

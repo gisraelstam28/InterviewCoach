@@ -1,0 +1,37 @@
+Gregory S. Israelstam
+Chicago, IL • (216) 536-2387 • gisraelstam28@gmail.com • http://linkedin.com/in/gregoryisraelstam
+WORK & DEVELOPMENT EXPERIENCE
+McKinsey & Co. Cleveland, OH / Chicago, IL
+Senior Business Analyst August 2022 – January 2025
+● Led a $400M RFP for a Fortune 100 MedTech organization, consolidating 10% of the supplier base and saving $70M annually. Delivered an additional $30M by coaching executives on advanced negotiation strategies.
+● Co-authored an impact assessment on Generative AI adoption for US healthcare systems (> $1B revenue), providing an implementation roadmap and potential cost savings projections to C-level stakeholders.
+● Developed a transformation office for a multi-billion-dollar petrochemical client, conducting comprehensive process analyses and facilitating cross-functional workshops to implement cost-saving initiatives, delivering $80M in annualized savings.
+● Streamlined US operations for a European-based MedTech client by designing a dynamic forecasting model to assess subsidiary consolidation impacts and partnering with domain leadership to implement a unified, synergy-driven organizational structure.
+● Co-developed a winning state government proposal to transform employee experience and reduce costs by streamlining core workflows, consolidating real estate hubs, and proposing best-in-class operating models to enhance operational efficiency.
+● Orchestrated three high-profile events (200+ C-suite attendees) at the 2024 HLTH conference, resulting in 15+ new partnership leads and elevating firm visibility in the healthcare sector.
+JPMorganChase – Chase Leadership Development Program Consumer Bank Operations – Innovation Columbus, OH
+August 2020 – July 2022
+● Supported integration of 3 cutting-edge SaaS technologies by collaborating with technology and controls teams, resulting in vendor agreements for 200+ licenses in an extended test-and-learn phase.
+● Automated key Innovation product intake processes, including end-user lifecycle tracking, while partnering with 5 internal product groups on proof-of-concept analyses for new technologies.
+JPMorgan Wealth Management – Advisor & Service Platforms Product Team
+● Led development of key product features (meeting scheduling, shared mailbox sync) by collaborating with advisors to address pain points and revamping the product backlog for realistic roadmaps.
+● Delivered an end-to-end lead generation framework by integrating interactive ads on Chase ATMs with Advisor CRM Salesforce software to increase volume of prospect leads by ~500/day.
+Consumer Bank Fraud Risk – Strategic Analytics
+● Optimized overdraft limits for Business Banking accounts using machine learning models, generating $17mm in annual revenue and improving customer financial safeguards.
+● Refined algorithmic overdraft assignment models for Business Banking segment, reducing overdraft losses by 5% and improving customer liquidity by 10%.
+OSU Honors Integrated Business & Engineering Columbus, OH
+Edwards Lifesciences/OSUMC Senior Capstone Project August 2019 – May 2020
+● Performed assessment of ventilator and respirator product landscape and designed a hybrid ventilator technology intended for intubated patients to provide easier ambulation, expedite recovery time, and reduce costs for hospital systems.
+● Worked alongside physicians at The Ohio State Wexner Medical Center to identify critical care gaps for intubated patients and co-developed a redesigned care implementation strategy.
+EDUCATION
+The Ohio State University, Fisher College of Business Columbus, OH
+Bachelor of Science in Business Administration (Honors) May 2020
+● Specialization: Finance Specialization GPA: 3.93
+● Minor: Engineering sciences Cumulative GPA: 3.55
+● Honors Integrated Business and Engineering (IBE): Built product development repertoire in a 4-year, rigorous Honors program blending engineering principles with business strategy to develop interdisciplinary first-principles problem-solving skills.
+● Eminence Fellowship: 1 of 27 students selected out of 1,200 applicants for full attendance undergraduate scholarship
+CERTIFICATIONS, RECOGNITION, SKILLS, AND INTERESTS
+General Competencies: Generative AI strategy & implementation, Procurement strategy optimization, Transformation management
+Technical Competencies: Salesforce, SAS, Teradata SQL, MS Excel and Excel VBA, MS PowerPoint
+Certifications & Recognition: Bloomberg Market Concepts, JPMC 5 Keys – Own issues start-to-finish.
+Professional interests: Product development, Generative AI strategy, investment analyses, strategic marketing, derivative investments

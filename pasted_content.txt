@@ -1,0 +1,44 @@
+🎯 App Vision & Value Proposition
+Vision: To help job seekers discover curated, relevant job opportunities and prepare effectively for interviews through an intelligent AI assistant — all without needing to browse endless job boards.
+Core Value Props:
+* 💼 Targeted Job Discovery through live AI-powered web searches, based on resume + user preferences.
+* 🎯 Personalized Interview Prep based on resume + job description — tailored questions and answers.
+* 🔍 No job APIs or job board integrations required — uses LangChain agents to perform live job searches.
+* 🧠 Free to use with upsell to premium for deeper or unlimited usage.
+
+🧱 Proposed App Structure (Feature Overview)
+🔍 Feature 1: Targeted Job Search (Live Search via LangChain Agent)
+User Flow:
+1. User completes onboarding:
+    * Fills out a career preference questionnaire (industry, role type, seniority, location, salary, etc.)
+    * Uploads their resume (PDF/text)
+2. AI API parses the resume and questionnaire to generate a “target job profile”
+3. App then performs web search/scrape:
+    * Search Google/LinkedIn/Lever/Greenhouse for relevant job listings
+    * Scrape descriptions and links
+4. AI in app ranks, explains, and formats top 5–10 live job listings
+5. Display curated job matches in the app with links to apply and reasoning for fit
+
+🎤 Feature 2: AI-Powered Interview Preparation
+User Flow:
+1. User selects a job listing (from search results or pasted link)
+2. AI:
+    * Analyzes the job description + user resume
+    * Generates:
+        * Likely interview questions
+        * Ideal responses based on their background
+        * Areas to emphasize and potential gaps
+3. Optionally: Enable an interactive mock interview chatbot (GPT-4o-powered)
+
+💸 Monetization Strategy
+🎯 Freemium Model
+* Free Users:
+    * 1 live search/day
+    * Limited interview prep (e.g., 3 questions)
+    * 2 job results per session (others blurred)
+* Premium Users ($9.99–19.99/mo):
+    * Unlimited searches
+    * Full job result access
+    * Full interview prep toolkit
+    * Bonus: Resume tailoring or expert tips
+
