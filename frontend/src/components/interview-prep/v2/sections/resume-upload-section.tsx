@@ -1,9 +1,10 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useInterviewPrepStore } from "../../../../../store/interview-prep-store"; // Corrected path to main store
+// import { useInterviewPrepStore } from "../../../../store/interview-prep-store"; // Original old store import
+import { useInterviewPrepV3Store } from "../../../../store/interview-prep-v3-store"; // New V3 store
 
 export default function ResumeUploadSection() {
-  const { setResume } = useInterviewPrepStore(); // Use setResume from main store
+  const { setResumeFile } = useInterviewPrepV3Store(); // Use setResumeFile from V3 store
   const [fileName, setFileName] = React.useState<string>("");
   const [error, setError] = React.useState<string | null>(null);
 
@@ -18,14 +19,14 @@ export default function ResumeUploadSection() {
         setError("Only PDF files are allowed.");
         setFileName("");
         console.log('[ResumeUploadSection] Clearing resume in store (handleFileChange error)');
-        setResume("");
+        setResumeFile(null);
         setValue("resume", null as any);
         return;
       }
       setFileName(file.name);
       setError(null);
       console.log('[ResumeUploadSection] Setting resume in store with file name:', file.name);
-      setResume(file.name); // Set resume in main store with file name (temporary)
+      setResumeFile(file); // Set resume in main store with file name (temporary)
       setValue("resume", files);
     }
   };
@@ -33,7 +34,7 @@ export default function ResumeUploadSection() {
   const handleRemove = () => {
     setFileName("");
     console.log('[ResumeUploadSection] Clearing resume in store (handleRemove)');
-    setResume(""); // Clear resume in main store
+    setResumeFile(null); // Clear resume in main store
     setError(null);
     setValue("resume", null as any);
   };

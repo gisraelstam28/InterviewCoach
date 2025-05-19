@@ -1,14 +1,15 @@
 import { useEffect } from "react";
-import { useInterviewPrepStore } from "../../interview-prep-v2-UI/store/interview-prep-store";
+// import { useInterviewPrepStore } from "../../../../store/interview-prep-store"; // Old store hook
+import { useInterviewPrepV3Store } from "../../../../store/interview-prep-v3-store"; // New V3 store
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { TechnicalCasePrepSection as TechCaseModel, PracticePrompt } from "@/types/interview-prep-v2";
+import type { TechnicalCasePrepSection as TechCaseModel, PracticePrompt } from "../../../../types/interview-prep-v2";
 
 interface TechnicalCasePrepSectionProps {
   data: TechCaseModel;
 }
 
 export default function TechnicalCasePrepSection({ data }: TechnicalCasePrepSectionProps) {
-  const { markStepComplete } = useInterviewPrepStore();
+  const { markStepComplete } = useInterviewPrepV3Store();
   useEffect(() => {
     markStepComplete(8);
   }, [markStepComplete]);
@@ -32,7 +33,7 @@ export default function TechnicalCasePrepSection({ data }: TechnicalCasePrepSect
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-5 space-y-1 text-sm">
-              {data.key_concepts.map((concept, idx) => (
+              {data.key_concepts?.map((concept, idx) => (
                 <li key={idx}>{concept}</li>
               ))}
             </ul>
@@ -45,7 +46,7 @@ export default function TechnicalCasePrepSection({ data }: TechnicalCasePrepSect
         <>
           <h2 className="text-xl font-semibold mt-6 mb-2">Practice Scenarios & Case Prompts</h2>
           <div className="space-y-4">
-            {data.prompts.map((prompt: PracticePrompt, idx: number) => (
+            {data.prompts?.map((prompt: PracticePrompt, idx: number) => (
               <Card key={idx}>
                 <CardHeader>
                   <CardTitle>Case Prompt {idx + 1}{prompt.category ? `: ${prompt.category}` : ''}</CardTitle>
@@ -107,7 +108,7 @@ export default function TechnicalCasePrepSection({ data }: TechnicalCasePrepSect
             <CardTitle>Key Terms Glossary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {data.key_terms_glossary.map((item, idx) => (
+            {data.key_terms_glossary?.map((item, idx) => (
               <div key={idx} className="border-b pb-2 mb-2 last:border-b-0 last:pb-0 last:mb-0">
                 <h4 className="font-semibold text-md">{item.term}</h4>
                 <p className="text-sm text-gray-700 ml-1">{item.definition}</p>
@@ -128,7 +129,7 @@ export default function TechnicalCasePrepSection({ data }: TechnicalCasePrepSect
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-5 space-y-1 text-sm">
-              {data.preparation_tips.map((tip, idx) => (
+              {data.preparation_tips?.map((tip, idx) => (
                 <li key={idx}>{tip}</li>
               ))}
             </ul>

@@ -5,15 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useInterviewPrepStore } from "../../../store/interview-prep-store";
 import { Input } from "@/components/ui/input"; // Added for file and text inputs
-import type { ViewMode } from "../../../store/interview-prep-store"
 import { CheckCircle2Icon } from "lucide-react"
 
-interface WelcomeSectionProps {
-  data: any
-  viewMode: ViewMode
-}
+type WelcomeSectionProps = object;
 
-export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function WelcomeSection(_props: WelcomeSectionProps) {
   const {
     resume, // Use 'resume' (string) from store
     jobDescription,

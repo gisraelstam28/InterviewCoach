@@ -4,14 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useInterviewPrepStore } from "../store/interview-prep-store"
 import { useEffect } from "react"
 import type { CompanyIndustrySection as CompanyIndustrySectionData } from "../../../types/interview-prep-v2";
-import type { ViewMode } from "@/store/interview-prep-store"; // Assuming ViewMode is exported from here or a similar central types/store file
 
 interface CompanyIndustrySectionProps {
   data: CompanyIndustrySectionData | undefined; // Allow undefined to handle cases where guide.section_1_company_industry might not exist
-  viewMode: ViewMode; // Re-add viewMode
 }
 
-export default function CompanyIndustrySection({ data, viewMode }: CompanyIndustrySectionProps) { // Re-add viewMode
+export default function CompanyIndustrySection({ data }: CompanyIndustrySectionProps) {
   const { markStepComplete } = useInterviewPrepStore()
 
   // Mark step as viewed/completed

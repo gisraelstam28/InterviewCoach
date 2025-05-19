@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
 import PremiumGate from "@/components/interview-prep/ui/premium-gate"
-import type { ViewMode } from "../../interview-prep-v2-UI/store/interview-prep-store";
-import { useInterviewPrepStore } from "../../interview-prep-v2-UI/store/interview-prep-store";
+// import type { ViewMode } from "../../../../store/interview-prep-store"; // Old store type
+// import { useInterviewPrepStore } from "../../../../store/interview-prep-store"; // Old store hook
+import { useInterviewPrepV3Store } from "../../../../store/interview-prep-v3-store"; // New V3 store and type
 import { MockInterviewFeedback } from "../../../../types/interview-prep-v2";
 
 interface MockInterviewContent {
@@ -17,11 +17,10 @@ interface MockInterviewContent {
 
 interface MockInterviewSectionProps {
   data: MockInterviewContent;
-  viewMode: ViewMode;
 }
 
-export default function MockInterviewSection({ data, viewMode }: MockInterviewSectionProps) {
-  const { markStepComplete } = useInterviewPrepStore()
+export default function MockInterviewSection({ data }: MockInterviewSectionProps) {
+  const { markStepComplete } = useInterviewPrepV3Store()
   const [answers, setAnswers] = useState<Record<number, string>>({})
 
   useEffect(() => {
@@ -60,9 +59,8 @@ export default function MockInterviewSection({ data, viewMode }: MockInterviewSe
                     className="min-h-[120px]"
                     value={answers[idx] || ""}
                     onChange={(e) => handleAnswerChange(idx, e.target.value)}
-                    disabled={viewMode === "quick"}
-                  />
-                  {viewMode === "deep" && answers[idx] && specificFeedback && (
+                                      />
+                  {answers[idx] && specificFeedback && (
                     <div className="mt-4 p-4 rounded-lg border bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
                       <h4 className="text-md font-semibold mb-3 text-gray-800 dark:text-gray-200">AI Feedback:</h4>
                       {specificFeedback.answer && specificFeedback.answer.trim() !== "" && (
@@ -91,23 +89,9 @@ export default function MockInterviewSection({ data, viewMode }: MockInterviewSe
                       )}
                     </div>
                   )}
-                  {viewMode === "deep" && answers[idx] && !specificFeedback && (
+                  {answers[idx] && !specificFeedback && (
                      <div className="mt-4 text-gray-500 dark:text-gray-400 text-sm">No specific feedback available for this question yet.</div>
                   )}
-                   {viewMode === "quick" && specificFeedback && (
-                     <div className="mt-4 p-4 rounded-lg border bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                       <h4 className="text-md font-semibold mb-3 text-gray-800 dark:text-gray-200">AI Generated Feedback:</h4>
-                       <p className="text-sm text-gray-700 dark:text-gray-300">
-                         <span className="font-medium text-gray-600 dark:text-gray-400">Critique:</span> {specificFeedback.feedback}
-                       </p>
-                        {specificFeedback.score > 0 && (
-                        <p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
-                          <span className="font-medium text-gray-600 dark:text-gray-400">Preliminary Score Indication:</span> {specificFeedback.score}/10
-                        </p>
-                      )}
-                     </div>
-                   )
-                  }
                 </CardContent>
               </Card>
             )}

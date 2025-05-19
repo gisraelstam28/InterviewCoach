@@ -5,13 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import PremiumGate from "@/components/interview-prep/ui/premium-gate"
-import type { ViewMode } from "@/store/interview-prep-store"
-import { useInterviewPrepStore } from "../store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../store/interview-prep-store"
 
-interface MockInterviewSectionProps {
-  data: any
-  viewMode: ViewMode
-}
+type MockInterviewSectionProps = object;
 
 // Mock data
 const mockData = {
@@ -45,7 +41,8 @@ const mockData = {
   ],
 }
 
-export default function MockInterviewSection({ data, viewMode }: MockInterviewSectionProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function MockInterviewSection(_props: MockInterviewSectionProps) {
   const { markStepComplete } = useInterviewPrepStore()
   const [answers, setAnswers] = useState<Record<number, string>>({})
 

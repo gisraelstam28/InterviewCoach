@@ -1,13 +1,9 @@
 import { useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ViewMode } from "@/store/interview-prep-store"
-import { useInterviewPrepStore } from "../store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../store/interview-prep-store"
 import mermaid from "mermaid"
 
-interface DepartmentContextSectionProps {
-  data: any
-  viewMode: ViewMode
-}
+interface DepartmentContextSectionProps {}
 
 // Mock data
 const mockData = {
@@ -67,7 +63,7 @@ const mockData = {
   ],
 }
 
-export default function DepartmentContextSection({ data, viewMode }: DepartmentContextSectionProps) {
+export default function DepartmentContextSection({}: DepartmentContextSectionProps) {
   const { markStepComplete } = useInterviewPrepStore()
   const chartRef = useRef<HTMLDivElement>(null)
 

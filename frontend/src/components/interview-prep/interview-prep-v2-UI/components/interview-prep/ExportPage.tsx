@@ -1,15 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useInterviewPrepStore } from '../../store/interview-prep-store';
+import { useInterviewPrepStore } from '../../../../../../store/interview-prep-store';
+import { useInterviewPrepV2Guide } from '../../../../../hooks/useInterviewPrepV2Guide';
 
 export default function ExportPage() {
   const navigate = useNavigate();
-  const { interviewGuide } = useInterviewPrepStore();
+  const guideQuery = useInterviewPrepV2Guide();
 
   const handleExportPDF = () => {
     // TODO: Implement PDF export functionality
-    console.log('Exporting to PDF...', interviewGuide);
+    console.log('Exporting to PDF...', guideQuery.data);
     // This would typically call an API endpoint to generate and download a PDF
   };
 

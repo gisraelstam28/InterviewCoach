@@ -84,24 +84,59 @@ def merge_resume_chunks(parsed_chunks):
     return merged
 
 def parse_resume_with_openai(resume_text: str) -> Dict:
-    # Single-call parsing for the full resume
+    # Check cache first
     cached = get_cached_resume(resume_text)
     if cached:
         return cached
+    
     print(f"DEBUG: Parsing resume text ({len(resume_text)} chars)")
-    messages = [
-        {"role": "system", "content": "You are an expert data extractor. When called to parse a resume, return only JSON matching the `parse_resume` schema."},
-        {"role": "user", "content": resume_text}
-    ]
-    response = openai.chat.completions.create(
-        model="gpt-3.5-turbo-1106",
-        messages=messages,
-        tools=[{"type": "function", "function": RESUME_FUNCTION}],
-        tool_choice={"type": "function", "function": {"name": "parse_resume"}},
-        temperature=0,
-        top_p=1
-    )
-    parsed = json.loads(response.choices[0].message.tool_calls[0].function.arguments)
+    
+    # If resume is too large, use chunking
+    if len(resume_text) > 10000:  # Threshold for chunking (adjust as needed)
+        print(f"DEBUG: Resume text too large, using chunking")
+        chunks = chunk_resume_text(resume_text)
+        parsed_chunks = []
+        
+        for i, chunk in enumerate(chunks):
+            print(f"DEBUG: Processing chunk {i+1}/{len(chunks)} ({len(chunk)} chars)")
+            try:
+                messages = [
+                    {"role": "system", "content": "You are an expert data extractor. Extract information from this resume chunk. Return only JSON matching the `parse_resume` schema. This is chunk " + str(i+1) + " of " + str(len(chunks)) + "."},
+                    {"role": "user", "content": chunk}
+                ]
+                response = openai.chat.completions.create(
+                    model="gpt-3.5-turbo-1106",
+                    messages=messages,
+                    tools=[{"type": "function", "function": RESUME_FUNCTION}],
+                    tool_choice={"type": "function", "function": {"name": "parse_resume"}},
+                    temperature=0,
+                    top_p=1
+                )
+                chunk_parsed = json.loads(response.choices[0].message.tool_calls[0].function.arguments)
+                parsed_chunks.append(chunk_parsed)
+            except Exception as e:
+                print(f"DEBUG: Error processing chunk {i+1}: {str(e)}")
+                # Continue with other chunks even if one fails
+        
+        # Merge the parsed chunks
+        parsed = merge_resume_chunks(parsed_chunks)
+    else:
+        # Single-call parsing for smaller resumes
+        messages = [
+            {"role": "system", "content": "You are an expert data extractor. When called to parse a resume, return only JSON matching the `parse_resume` schema."},
+            {"role": "user", "content": resume_text}
+        ]
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo-1106",
+            messages=messages,
+            tools=[{"type": "function", "function": RESUME_FUNCTION}],
+            tool_choice={"type": "function", "function": {"name": "parse_resume"}},
+            temperature=0,
+            top_p=1
+        )
+        parsed = json.loads(response.choices[0].message.tool_calls[0].function.arguments)
+    
+    # Validate and cache the result
     valid, missing = validate_resume(parsed)
     if not valid:
         print(f"DEBUG: parse_resume missing fields: {missing}")

@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useInterviewPrepStore } from "@/store/interview-prep-store"
-import type { ViewMode } from "@/store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../store/interview-prep-store"
+import type { ViewMode } from "../../../store/interview-prep-store"
 import { CheckCircle2Icon } from "lucide-react"
 
 import type { WelcomeSection as WelcomeSectionType } from "../../../../../../types/interview-prep-v2"
@@ -17,13 +17,13 @@ interface WelcomeSectionProps {
 }
 
 export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) {
-  const { resume, jobDescription, setResume, setJobDescription, markStepComplete } = useInterviewPrepStore()
-  const [localResume, setLocalResume] = useState(resume)
+  const { resumeFile, jobDescription, setResumeFile, setJobDescription, markStepComplete } = useInterviewPrepStore()
+  const [localResumeFile, setLocalResumeFile] = useState(resumeFile)
   const [localJD, setLocalJD] = useState(jobDescription)
   const [activeTab, setActiveTab] = useState<string>("overview")
 
   const handleSave = () => {
-    setResume(localResume)
+    setResumeFile(localResumeFile)
     setJobDescription(localJD)
     markStepComplete(0)
   }
@@ -139,16 +139,21 @@ export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) 
         <TabsContent value="input" className="mt-6 space-y-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="resume" className="block text-sm font-medium mb-1">
-                Paste your resume
+              <label htmlFor="resume-upload" className="block text-sm font-medium mb-1">
+                Upload your resume (PDF)
               </label>
-              <Textarea
-                id="resume"
-                placeholder="Paste your resume here..."
-                className="min-h-[200px]"
-                value={localResume}
-                onChange={(e) => setLocalResume(e.target.value)}
+              <input
+                id="resume-upload"
+                type="file"
+                accept="application/pdf"
+                onChange={e => {
+                  const file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+                  setLocalResumeFile(file);
+                }}
               />
+              {localResumeFile && (
+                <div className="mt-2 text-sm text-gray-600">Selected file: {localResumeFile.name}</div>
+              )}
             </div>
 
             <div>

@@ -2,17 +2,15 @@
 
 import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ViewMode } from "@/store/interview-prep-store"
 
 interface RoleSuccessJDSectionProps {
   data: {
     must_haves: string[]
     nice_to_haves: string[]
   }
-  viewMode: ViewMode
 }
 
-export default function RoleSuccessJDSection({ data, viewMode }: RoleSuccessJDSectionProps) {
+export default function RoleSuccessJDSection({ data }: RoleSuccessJDSectionProps) {
   useEffect(() => {
     // Optionally mark this sub-section complete if needed
   }, [])

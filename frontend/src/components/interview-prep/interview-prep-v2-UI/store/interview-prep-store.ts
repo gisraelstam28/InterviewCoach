@@ -7,7 +7,7 @@ export type ViewMode = "quick" | "deep"
 
 import type { InterviewPrepV2Guide } from "../../../../types/interview-prep-v2";
 
-interface InterviewPrepState {
+export interface InterviewPrepState {
   // User data
   resumeFile: File | null
   jobDescription: string

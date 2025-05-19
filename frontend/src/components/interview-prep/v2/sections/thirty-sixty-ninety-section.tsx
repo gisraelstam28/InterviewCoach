@@ -1,14 +1,13 @@
-import React, { useEffect } from "react";
-import type { ViewMode } from "@/store/interview-prep-store";
-import { useInterviewPrepStore } from "../../interview-prep-v2-UI/store/interview-prep-store";
+import { useEffect } from "react";
+// import { useInterviewPrepStore } from "../../../../store/interview-prep-store"; // Old store hook
+import { useInterviewPrepV3Store } from "../../../../store/interview-prep-v3-store"; // New V3 store
 
 interface ThirtySixtyNinetySectionProps {
   data: any;
-  viewMode: ViewMode;
 }
 
-export default function ThirtySixtyNinetySection({ data, viewMode }: ThirtySixtyNinetySectionProps) {
-  const { markStepComplete } = useInterviewPrepStore();
+export default function ThirtySixtyNinetySection({ data }: ThirtySixtyNinetySectionProps) {
+  const { markStepComplete } = useInterviewPrepV3Store();
   useEffect(() => {
     markStepComplete(11);
   }, [markStepComplete]);

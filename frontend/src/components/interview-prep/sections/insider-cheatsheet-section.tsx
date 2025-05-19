@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { InfoIcon, DollarSignIcon, MessageSquareQuoteIcon, /*TrendingUpIcon,*/ BuildingIcon } from "lucide-react"
 // TrendingUpIcon removed as financial_snapshot is now a string
-import type { ViewMode } from "@/store/interview-prep-store"
 import { useInterviewPrepStore } from "../store/interview-prep-store"
 
 // TypeScript interfaces matching Pydantic models
@@ -23,10 +22,9 @@ interface InsiderCheatSheetDataType {
 
 interface InsiderCheatSheetSectionProps {
   data?: InsiderCheatSheetDataType | null
-  viewMode: ViewMode // Keep viewMode as it's part of the standard section interface, even if not used here
 }
 
-export default function InsiderCheatSheetSection({ data, viewMode }: InsiderCheatSheetSectionProps) {
+export default function InsiderCheatSheetSection({ data }: InsiderCheatSheetSectionProps) {
   console.log('%c[InsiderCheatSheetSection] Component invoked. UI Step 9. Data received:', 'color: #228B22; font-weight: bold; font-size: 1.1em;', data);
 
   // Original content continues below, ensure the function signature matches if you copy-pasted only the log line. data /*, viewMode*/ }: InsiderCheatSheetSectionProps) {

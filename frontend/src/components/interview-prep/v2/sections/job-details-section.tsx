@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useInterviewPrepStore } from "../../../../../store/interview-prep-store"; // Corrected path to main store
+// import { useInterviewPrepStore } from "../../../../../store/interview-prep-store"; // Original old store import
+import { useInterviewPrepV3Store } from "../../../../store/interview-prep-v3-store"; // New V3 store
 
 const DEBOUNCE_DELAY = 500; // milliseconds
 
 export default function JobDetailsSection() {
-  const storeInstance = useInterviewPrepStore();
-  console.log('[JobDetailsSection] Raw store instance from useInterviewPrepStore():', storeInstance);
+  const storeInstance = useInterviewPrepV3Store();
+  console.log('[JobDetailsSection] Raw store instance from useInterviewPrepV3Store():', storeInstance);
   // Note: To see all state and actions, you might need to access storeInstance.getState() if not directly on the instance
   // For Zustand, actions are usually directly on the object returned by the hook.
   console.log('[JobDetailsSection] Keys of raw store instance:', Object.keys(storeInstance));
@@ -28,6 +29,7 @@ export default function JobDetailsSection() {
 
   const [localJobDescription, setLocalJobDescription] = useState(storeJobDescription);
   const [localCompanyName, setLocalCompanyName] = useState(storeCompanyName);
+  const [localIndustry, setLocalIndustry] = useState(industry); // Added for local industry state
 
   // Sync local state if global state changes from elsewhere (e.g., initial load)
   useEffect(() => {
@@ -37,6 +39,11 @@ export default function JobDetailsSection() {
   useEffect(() => {
     setLocalCompanyName(storeCompanyName);
   }, [storeCompanyName]);
+
+  // Sync local industry if global state changes
+  useEffect(() => {
+    setLocalIndustry(industry);
+  }, [industry]);
 
   // Debounce job description updates
   useEffect(() => {
@@ -66,6 +73,20 @@ export default function JobDetailsSection() {
     };
   }, [localCompanyName, storeCompanyName, setCompanyName]);
 
+  // Debounce industry updates
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (localIndustry !== industry) { // 'industry' here is storeIndustry
+        console.log('[JobDetailsSection] Debounced: Setting industry in store:', localIndustry);
+        setIndustry(localIndustry);
+      }
+    }, DEBOUNCE_DELAY);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [localIndustry, industry, setIndustry]);
+
   return (
     <div className="bg-white shadow rounded-lg p-6 flex flex-col gap-4 items-center">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Job Details</h2>
@@ -93,11 +114,8 @@ export default function JobDetailsSection() {
         <span className="text-sm font-medium text-gray-700">Industry</span>
         <select
           className="mt-1 block w-full rounded border-gray-300 shadow-sm"
-          value={industry}
-          onChange={e => {
-            console.log('[JobDetailsSection] Setting industry in store:', e.target.value);
-            setIndustry(e.target.value)
-          }}
+          value={localIndustry}
+          onChange={e => setLocalIndustry(e.target.value)}
           required
         >
           <option value="">Select an industry</option>

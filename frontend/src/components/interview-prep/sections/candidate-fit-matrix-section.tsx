@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useInterviewPrepStore } from "../interview-prep-v2-UI/store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../store/interview-prep-store"
 
 interface RoleUnderstandingFitAssessmentData {
   role_summary?: string;

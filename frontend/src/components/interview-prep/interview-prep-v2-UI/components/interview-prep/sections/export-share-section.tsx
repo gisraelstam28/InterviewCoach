@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DownloadIcon, Share2Icon, SendIcon } from "lucide-react"
-import { useInterviewPrepStore } from "@/store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../store/interview-prep-store";
+import type { ViewMode } from "../../../store/interview-prep-store";
 
 export default function ExportShareSection() {
   const [isExporting, setIsExporting] = useState(false)
   const [exportSuccess, setExportSuccess] = useState(false)
-  const { resume, jobDescription } = useInterviewPrepStore()
+  const { resumeFile, jobDescription } = useInterviewPrepStore()
 
   const handleExportPDF = () => {
     setIsExporting(true)
@@ -137,7 +138,7 @@ export default function ExportShareSection() {
             <div>
               <h3 className="text-sm font-medium text-gray-500">Resume</h3>
               <p className="text-sm mt-1 line-clamp-2">
-                {resume ? resume.substring(0, 100) + "..." : "No resume provided"}
+                {resumeFile ? resumeFile.name : "No resume uploaded"}
               </p>
             </div>
 

@@ -1,15 +1,27 @@
-import React, { useEffect } from "react";
-import type { ViewMode } from "@/store/interview-prep-store";
-import { useInterviewPrepStore } from "../../interview-prep-v2-UI/store/interview-prep-store";
+import { useEffect } from "react";
+// import { useInterviewPrepStore } from "../../../../store/interview-prep-store"; // Old store hook
+import { useInterviewPrepV3Store } from "../../../../store/interview-prep-v3-store"; // New V3 store
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface CompanyIndustrySectionProps {
-  data: any;
-  viewMode: ViewMode;
+interface RecentNewsItem {
+  id: number | string;
+  url: string;
+  headline: string;
+  date: string | number;
 }
 
-export default function CompanyIndustrySection({ data, viewMode }: CompanyIndustrySectionProps) {
-  const { markStepComplete } = useInterviewPrepStore();
+interface CompanyIndustryData {
+  company_overview: string;
+  recent_news: RecentNewsItem[];
+  industry_drivers: string[];
+}
+
+interface CompanyIndustrySectionProps {
+  data: CompanyIndustryData;
+}
+
+export default function CompanyIndustrySection({ data }: CompanyIndustrySectionProps) {
+  const { markStepComplete } = useInterviewPrepV3Store();
   useEffect(() => {
     markStepComplete(3);
   }, [markStepComplete]);
@@ -36,7 +48,7 @@ export default function CompanyIndustrySection({ data, viewMode }: CompanyIndust
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {data.recent_news.map(item => (
+              {data.recent_news.map((item: RecentNewsItem) => (
                 <li key={item.id} className="border-b pb-3 last:border-0 last:pb-0">
                   <a href={item.url} target="_blank" rel="noopener noreferrer" className="block hover:bg-gray-50 p-2 -m-2 rounded transition-colors">
                     <h3 className="font-medium text-blue-600 hover:underline">{item.headline}</h3>
@@ -55,7 +67,7 @@ export default function CompanyIndustrySection({ data, viewMode }: CompanyIndust
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-5 space-y-2">
-              {data.industry_drivers.map((driver, idx) => (
+              {data.industry_drivers.map((driver: string, idx: number) => (
                 <li key={idx}>{driver}</li>
               ))}
             </ul>

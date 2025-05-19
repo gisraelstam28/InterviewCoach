@@ -7,25 +7,25 @@ export interface WelcomeSection {
 }
 
 // SECTION 1: Company & Industry Snapshot
-export interface CompanyIndustrySection {
-  company_overview: string;
-  recent_news: {
-    title: string;
-    url: string;
-    date: string;
-    source: string | null;
-    summary: string;
-    so_what: string;
-  }[];
-  industry_drivers: string[];
+// Corresponds to Pydantic NewsItem
+export interface NewsItemType {
+  title?: string;
+  url?: string;
+  date?: string;
+  source?: string | null;
+  summary?: string;
+  so_what?: string;
 }
 
-// SECTION 2: Department Context
-export interface DepartmentContextSectionType {
-  overview?: string;
-  team_structure?: string;
-  key_stakeholders?: string[];
+export interface CompanyIndustrySection {
+  company_overview?: string;
+  recent_news?: NewsItemType[];
+  industry_drivers?: string[];
 }
+
+// SECTION 2: Calendar Invites (Replaces Department Context)
+// Note: DepartmentContextSectionType removed as it's stale.
+// The backend guide uses section_2_calendar_invites with a different structure.
 
 // SECTION 3: Role Success Factors
 export interface EvaluatedRequirementItem {
@@ -36,21 +36,22 @@ export interface EvaluatedRequirementItem {
 }
 
 export interface RoleSuccessFactorsSection {
-  must_haves: EvaluatedRequirementItem[];
-  nice_to_haves: EvaluatedRequirementItem[];
-  // Add other fields from Pydantic model if they are to be used in UI, e.g.:
-  // job_duties?: string[];
-  // qualifications?: string[];
-  // overall_readiness?: string;
-  // focus_recommendations?: string[];
+  must_haves?: EvaluatedRequirementItem[];
+  nice_to_haves?: EvaluatedRequirementItem[];
+  job_duties?: string[];
+  qualifications?: string[];
+  overall_readiness?: string;
+  focus_recommendations?: string[];
 }
 
 // SECTION 4: Role Understanding & Fit Assessment (Replaces Candidate Fit Matrix)
+// Fields are required here because Pydantic models have defaults (e.g., default="", default_factory=list)
+// ensuring they will be present in the data from the backend if the section itself exists.
 export interface RoleUnderstandingFitAssessmentSectionData {
-  role_summary?: string;
-  key_responsibilities_summary?: string[];
-  overall_fit_rating?: string;
-  fit_assessment_details?: string;
+  role_summary: string;
+  key_responsibilities_summary: string[];
+  overall_fit_rating: string;
+  fit_assessment_details: string;
 }
 
 // Old Candidate Fit Matrix types (can be removed if no longer used elsewhere)
@@ -79,31 +80,37 @@ export interface StarStory {
 }
 
 export interface StarStoryBankSection {
-  stories: StarStory[];
+  stories?: StarStory[];
 }
 
 // SECTION 6: Technical / Case Prep
-export interface PracticePrompt {
-  question: string; // Renamed from 'prompt' to match data and usage
-  sample_answer: string; // Renamed from 'gold_standard_answer'
-  resources?: Array<{ title?: string; url: string }>; // Changed from string[] and renamed
+export interface CaseStudyPrompt {
+  question: string;
+  sample_answer: string;
+  resources?: Array<{ title?: string; url: string }>;
   category?: string;
   difficulty?: string;
   time_estimate?: string;
 }
 
 export interface TechnicalCasePrepSection {
-  key_concepts?: string[];
-  prompts?: PracticePrompt[]; // Made optional since we might have practice_prompts instead
-  practice_prompts?: PracticePrompt[]; // Alias for prompts
+  key_concepts: string[];
+  prompts: CaseStudyPrompt[];
   sample_case_walkthrough?: string;
-  key_terms_glossary?: Array<{ term: string; definition: string; related_terms?: string[] }>;
-  preparation_tips?: string[];
+  key_terms_glossary: Array<{ term: string; definition: string; related_terms?: string[] }>;
+  preparation_tips: string[];
 }
 
 export type TechnicalCasePrepSectionData = TechnicalCasePrepSection;
 
 // SECTION 7: Mock Interview & Feedback
+export interface MockInterviewQuestion {
+  question_text: string;
+  suggested_answer_outline: string[];
+  follow_up_questions?: string[];
+  tips_for_answering?: string[];
+}
+
 export interface MockInterviewFeedback {
   question: string;
   answer: string;
@@ -113,6 +120,9 @@ export interface MockInterviewFeedback {
 }
 
 export interface MockInterviewSection {
+  interview_format_overview: string;
+  sample_questions: MockInterviewQuestion[];
+  tips_for_success: string[];
   questions: string[];
   feedback: MockInterviewFeedback[];
   premium_required: boolean;
@@ -200,7 +210,7 @@ export interface JDStructured {
 export interface InterviewPrepV2Guide {
   section_0_welcome?: WelcomeSection;
   section_1_company_industry?: CompanyIndustrySection;
-  section_2_department_context?: DepartmentContextSectionType;
+  // section_2_calendar_invites removed as per user request.
   section_3_role_success?: RoleSuccessFactorsSection;
   section_4_role_understanding_fit_assessment?: RoleUnderstandingFitAssessmentSectionData;
   section_5_star_story_bank?: StarStoryBankSection;

@@ -2,7 +2,7 @@
 
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import type { ViewMode } from "@/store/interview-prep-store"
+import type { ViewMode } from "../../../store/interview-prep-store"
 
 interface ViewToggleProps {
   viewMode: ViewMode

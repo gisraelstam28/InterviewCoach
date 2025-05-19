@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ViewMode } from "@/store/interview-prep-store"
-import { useInterviewPrepStore } from "@/store/interview-prep-store"
+import type { ViewMode } from "../../../store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../store/interview-prep-store"
 import mermaid from "mermaid"
 
 interface DepartmentContextSectionProps {

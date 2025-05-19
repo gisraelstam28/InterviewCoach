@@ -2,13 +2,9 @@
 
 import { useEffect } from "react"
 import CollapsibleCard from "@/components/interview-prep/ui/collapsible-card"
-import type { ViewMode } from "@/store/interview-prep-store"
-import { useInterviewPrepStore } from "../store/interview-prep-store"
+import { useInterviewPrepStore } from "../../../store/interview-prep-store"
 
-interface StarStoryBankSectionProps {
-  data: any
-  viewMode: ViewMode
-}
+interface StarStoryBankSectionProps {}
 
 // Mock data
 const mockData = {
@@ -49,7 +45,7 @@ const mockData = {
   ],
 }
 
-export default function StarStoryBankSection({ data, viewMode }: StarStoryBankSectionProps) {
+export default function StarStoryBankSection({}: StarStoryBankSectionProps) {
   const { markStepComplete } = useInterviewPrepStore()
 
   useEffect(() => {
