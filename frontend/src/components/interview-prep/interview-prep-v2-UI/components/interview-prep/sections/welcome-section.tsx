@@ -6,17 +6,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useInterviewPrepStore } from "../../../store/interview-prep-store"
-import type { ViewMode } from "../../../store/interview-prep-store"
 import { CheckCircle2Icon } from "lucide-react"
 
 import type { WelcomeSection as WelcomeSectionType } from "../../../../../../types/interview-prep-v2"
 
 interface WelcomeSectionProps {
   data: WelcomeSectionType
-  viewMode: ViewMode
 }
 
-export default function WelcomeSection({ data, viewMode }: WelcomeSectionProps) {
+export default function WelcomeSection({ data }: WelcomeSectionProps) {
   const { resumeFile, jobDescription, setResumeFile, setJobDescription, markStepComplete } = useInterviewPrepStore()
   const [localResumeFile, setLocalResumeFile] = useState(resumeFile)
   const [localJD, setLocalJD] = useState(jobDescription)

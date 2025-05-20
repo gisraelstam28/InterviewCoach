@@ -1,11 +1,13 @@
 "use client"
 
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { InterviewPrepV2Guide } from "../../../../../types/interview-prep-v2";
 
 // import { useInterviewPrepStore } from "../../store/interview-prep-store"; // Old V2 store (via re-export)
-import { useInterviewPrepV3Store } from "@/store/interview-prep-v3-store"; // New V3 store
+import { useInterviewPrepV3Store } from "../../../../../store/interview-prep-v3-store"; // New V3 store
+import { type JobDetailsSectionRef } from '../../../v2/sections/job-details-section';
+import type { CompanyIndustrySection as CompanyIndustrySectionTypeFromV2Types } from "../../../../../types/interview-prep-v2";
 
 import NavigationButtons from "@/components/interview-prep/ui/navigation-buttons"
 // import DepartmentContextSection from '../../../v2/sections/department-context-section'; // Removed as component was deleted
@@ -13,9 +15,26 @@ import NavigationButtons from "@/components/interview-prep/ui/navigation-buttons
 import { useInterviewPrepV2Guide } from '../../../../../hooks/useInterviewPrepV2Guide';
 
 export default function StepContent({ stepId }: { stepId: number }) {
-  const prevCurrentStepRef = React.useRef<number>();
-  const store = useInterviewPrepV3Store(state => state);
-  const { currentStep, completedSteps, progress, interviewGuide, companyName, jobDescription, industry, resumeFile, setCurrentStep, markStepComplete, setResumeFile, setJobDescription, setCompanyName, setIndustry, setInterviewGuide, resetStore, setShouldGenerateGuide, setIsGeneratingInterviewPrepGuide, jobDetailsFinalized, setJobDetailsFinalized } = store;
+  const jobDetailsSectionRef = useRef<JobDetailsSectionRef>(null);
+  const prevCurrentStepRef = React.useRef<number | undefined>();
+  const {
+    currentStep,
+    setCurrentStep,
+    completedSteps,
+    markStepComplete,
+    interviewGuide,
+    setInterviewGuide,
+    resetStore,
+    setShouldGenerateGuide,
+    jobDetailsFinalized,
+    setJobDetailsFinalized,
+    // Add any other state/actions needed from the store here e.g.:
+    // jobDescription, 
+    // companyName, 
+    // shouldGenerateGuide, 
+    // isGeneratingInterviewPrepGuide, 
+    // resumeFile
+  } = useInterviewPrepV3Store((state) => state);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -25,16 +44,21 @@ export default function StepContent({ stepId }: { stepId: number }) {
   const { data: guide, isLoading, error, isSuccess } = useInterviewPrepV2Guide() as { data: InterviewPrepV2Guide | undefined, isLoading: boolean, error: Error | null, isSuccess: boolean }
 
   // Memoized data for different sections
-  const memoizedCompanyData = React.useMemo(() => {
+  const memoizedCompanyData = React.useMemo((): CompanyIndustrySectionTypeFromV2Types | undefined => {
     if (!guide) return { company_overview: "", recent_news: [], industry_drivers: [] };
     const sectionData = guide.section_1_company_industry;
+    if (!sectionData) return undefined; // Explicitly return undefined if sectionData is missing
     return {
       company_overview: sectionData?.company_overview || "",
-      recent_news: sectionData?.recent_news?.map((news, idx) => ({
-        id: idx,
+      recent_news: sectionData?.recent_news?.map(news => ({
         url: news.url || "",
-        headline: news.title || "",
-        date: news.date || new Date().toISOString()
+        title: news.title || "",
+        summary: news.summary || "",
+        date: news.date || new Date().toISOString(),
+        // Removed 'id' property as it's not in NewsItemType
+        // Assuming 'news' here is correctly typed as NewsItemType from the guide structure
+        // so news.url, news.title, news.summary, news.date are accessed correctly.
+        // CompanyIndustrySectionV2 uses item.url for its key, which is fine.
       })) || [],
       industry_drivers: sectionData?.industry_drivers || []
     };
@@ -121,13 +145,6 @@ export default function StepContent({ stepId }: { stepId: number }) {
     });
   }, [guide, isLoading, isSuccess, error, stepId, currentStep]);
 
-  // Log Zustand store values relevant to the 'enabled' condition of useInterviewPrepV2Guide
-  console.log('[StepContent] Store values for guide query:', {
-    jobDescriptionExists: !!jobDescription,
-    resumeFileExists: !!resumeFile,
-    jobDescription: jobDescription, // Log the actual value
-    resumeFile: resumeFile // Log the actual value for inspection
-  });
 
   // Effect 1: Sync stepId from props to currentStep in store
   useEffect(() => {
@@ -135,7 +152,7 @@ export default function StepContent({ stepId }: { stepId: number }) {
       console.log(`[StepContent Effect Sync Step] stepId (${stepId}) !== currentStep (${currentStep} from store). Calling setCurrentStep(${stepId}).`);
       setCurrentStep(stepId);
     }
-  }, [stepId, setCurrentStep]); // Removed currentStep from dependencies
+  }, [stepId, currentStep, setCurrentStep]);
 
   // Effect 2: Handle Step 0 Initialization
   useEffect(() => {
@@ -191,7 +208,7 @@ export default function StepContent({ stepId }: { stepId: number }) {
   // Import the V2 components using React.lazy for code splitting
   const ResumeUploadSection = React.lazy(() => import('../../../v2/sections/resume-upload-section'));
   const JobDetailsSection = React.lazy(() => import('../../../v2/sections/job-details-section'));
-  const CompanyIndustrySectionV2 = React.lazy(() => import('../../../v2/sections/company-industry-section'));
+  const CompanyIndustrySectionV2 = React.lazy(() => import('./sections/company-industry-section'));
   // const DepartmentContextSectionV2 = React.lazy(() => import('../../../v2/sections/department-context-section')); // Removed as component was deleted
   const RoleSuccessFactorsSectionV2 = React.lazy(() => import('../../../v2/sections/role-success-factors-section'));
   const CandidateFitMatrixSectionV2 = React.lazy(() => import('../../../v2/sections/candidate-fit-matrix-section'));
@@ -199,8 +216,6 @@ export default function StepContent({ stepId }: { stepId: number }) {
   const TechnicalCasePrepSectionV2 = React.lazy(() => import('../../../v2/sections/technical-case-prep-section'));
   const MockInterviewSectionV2 = React.lazy(() => import('../../../v2/sections/mock-interview-section'));
   const InsiderCheatsheetSectionV2 = React.lazy(() => import('../../../v2/sections/insider-cheatsheet-section'));
-  const ThirtySixtyNinetySectionV2 = React.lazy(() => import('../../../v2/sections/thirty-sixty-ninety-section'));
-  const OfferNegotiationSectionV2 = React.lazy(() => import('../../../v2/sections/offer-negotiation-section'));
 
   const renderStepContent = () => {
     const isGuideDataAvailable = !!guide && !isLoading && isSuccess;
@@ -224,7 +239,7 @@ export default function StepContent({ stepId }: { stepId: number }) {
       console.log('[renderStepContent] Rendering JobDetailsSection for stepId: 1');
       return (
         <React.Suspense fallback={fallback}>
-          <JobDetailsSection />
+          <JobDetailsSection ref={jobDetailsSectionRef} />
         </React.Suspense>
       );
     }
@@ -243,37 +258,25 @@ export default function StepContent({ stepId }: { stepId: number }) {
         );
       }
 
-
-      if (!memoizedCompanyData.company_overview && memoizedCompanyData.recent_news.length === 0 && memoizedCompanyData.industry_drivers.length === 0) {
+      if (!memoizedCompanyData) {
+        // This case handles when guide data is available, but section_1_company_industry specifically is missing or empty.
         return (
           <div className="p-4">
-            <h2 className="text-2xl font-bold mb-4">Company & Industry</h2>
-            <p className="text-gray-700 mb-4">Company and industry information is being prepared or is not available.</p>
+            <h2 className="text-2xl font-bold mb-4">Company & Industry Analysis</h2>
+            <p className="text-gray-700 mb-4">Company and industry information is being prepared or is not available for this guide.</p>
           </div>
         );
       }
+      
+      // If we have memoizedCompanyData, render the actual component
+      console.log('[renderStepContent] Rendering CompanyIndustrySectionV2 for stepId: 2 with data:', memoizedCompanyData);
       return (
-        <React.Suspense fallback={fallback}>
+        <React.Suspense fallback={fallback}> {/* Ensure fallback is defined in this scope */}
           <CompanyIndustrySectionV2 data={memoizedCompanyData} />
         </React.Suspense>
       );
-    } else if (stepId === 3) {
-      // Department Context - currently a placeholder, no guide data used directly here for V2 component
-      console.log('[renderStepContent] Rendering Department Context placeholder for stepId: 3');
-      return (
-        <div className="p-4">
-          <h2 className="text-2xl font-bold mb-4">Department Context</h2>
-          <p className="text-gray-700 mb-4">Information for the department context is not currently available in this guide.</p>
-          <div className="bg-blue-50 p-4 rounded-md"><p className="text-blue-700">Please proceed to the next section.</p></div>
-        </div>
-      );
-    }
-    
-    // Debug log for guide data when relevant
-    if (guide && stepId > 1) {
-      console.log('StepContent - Current step:', stepId, 'Guide data keys:', Object.keys(guide));
-    }
 
+    }
     if (stepId === 4) {
       if (!isGuideAvailableForStep(stepId)) {
         return <div className="p-4"><h2 className="text-2xl font-bold mb-4">Role Success Factors</h2><p>Being prepared...</p></div>;
@@ -362,7 +365,6 @@ export default function StepContent({ stepId }: { stepId: number }) {
       if (stepId === 1) {
         console.log('[StepContent] Moving from step 1 to 2, triggering guide generation via store');
         setShouldGenerateGuide(true);
-        setIsGeneratingInterviewPrepGuide(true);
       }
 
       // Client-side route transition without full page reload
@@ -391,19 +393,19 @@ export default function StepContent({ stepId }: { stepId: number }) {
   if (isLoading && stepId > 1) {
     return (
       <div className="space-y-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            <div className="h-24 bg-gray-200 rounded"></div>
-          </div>
+        <div className="animate-pulse space-y-4">
+          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-24 bg-gray-200 rounded"></div>
         </div>
         <NavigationButtons
+          currentStep={currentStep}
           onBack={handleBack}
           onNext={handleNext}
           disableNext={true}
           disableBack={stepId === 0}
           isLastStep={stepId === 10}
+          jobDetailsSectionRef={jobDetailsSectionRef}
         />
       </div>
     )
@@ -416,6 +418,7 @@ export default function StepContent({ stepId }: { stepId: number }) {
           Error loading guide: {error.message}
         </div>
         <NavigationButtons
+          currentStep={currentStep}
           onBack={handleBack}
           onNext={handleNext}
           disableNext={true}
@@ -434,6 +437,7 @@ export default function StepContent({ stepId }: { stepId: number }) {
       </div>
 
       <NavigationButtons
+        currentStep={currentStep}
         onBack={handleBack}
         onNext={handleNext}
         disableNext={stepId >= 10}

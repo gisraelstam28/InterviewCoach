@@ -1,19 +1,17 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ViewMode } from "@/store/interview-prep-store"
-import { useInterviewPrepStore } from "../../../store/interview-prep-store";
+import { useInterviewPrepV3Store } from "../../../../../../store/interview-prep-v3-store";
 import { useEffect } from "react"
 
 import type { CompanyIndustrySection as CompanyIndustrySectionType } from "../../../../../../types/interview-prep-v2"
 
 interface CompanyIndustrySectionProps {
   data: CompanyIndustrySectionType
-  viewMode: ViewMode
 }
 
-export default function CompanyIndustrySection({ data, viewMode }: CompanyIndustrySectionProps) {
-  const { markStepComplete } = useInterviewPrepStore()
+export default function CompanyIndustrySection({ data }: CompanyIndustrySectionProps) {
+  const { markStepComplete } = useInterviewPrepV3Store()
 
   // Mark step as viewed/completed
   useEffect(() => {
@@ -35,7 +33,7 @@ export default function CompanyIndustrySection({ data, viewMode }: CompanyIndust
             <CardTitle>Company Overview</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{data.company_overview}</p>
+            <p>{data.company_overview || "Company overview not available."}</p>
           </CardContent>
         </Card>
 
@@ -46,7 +44,7 @@ export default function CompanyIndustrySection({ data, viewMode }: CompanyIndust
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              {data.recent_news.map((item) => (
+              {(data.recent_news && data.recent_news.length > 0) ? data.recent_news.map((item) => (
                 <li key={item.url} className="border-b pb-3 last:border-0 last:pb-0">
                   <a
                     href={item.url}
@@ -59,7 +57,7 @@ export default function CompanyIndustrySection({ data, viewMode }: CompanyIndust
                     <p className="text-sm text-gray-700 mt-1">{item.summary}</p>
                   </a>
                 </li>
-              ))}
+              )) : <li><p className="text-gray-500 italic">No recent news available.</p></li>}
             </ul>
           </CardContent>
         </Card>
@@ -71,9 +69,9 @@ export default function CompanyIndustrySection({ data, viewMode }: CompanyIndust
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-5 space-y-2">
-              {data.industry_drivers.map((driver, index) => (
+              {(data.industry_drivers && data.industry_drivers.length > 0) ? data.industry_drivers.map((driver, index) => (
                 <li key={index}>{driver}</li>
-              ))}
+              )) : <li><p className="text-gray-500 italic">No industry drivers available.</p></li>}
             </ul>
           </CardContent>
         </Card>

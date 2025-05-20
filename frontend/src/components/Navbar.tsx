@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onUpgrade }) => {
-  const { isLoggedIn, isPremium, login, logout, upgradeToPremium } = useUser();
+  const { isLoggedIn, isPremium, login, logout } = useUser();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const handleUpgrade = () => {

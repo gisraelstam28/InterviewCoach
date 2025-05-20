@@ -2,41 +2,19 @@
 
 import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useInterviewPrepStore } from "../../../store/interview-prep-store";
-import type { ViewMode } from '../../../store/interview-prep-store';
+import { useInterviewPrepV3Store } from "../../../../../../store/interview-prep-v3-store";
 import type { RoleSuccessFactorsSection as RoleSuccessFactorsDataProp, EvaluatedRequirementItem } from '../../../../../../types/interview-prep-v2';
 
 interface RoleSuccessFactorsSectionProps {
   data?: RoleSuccessFactorsDataProp; 
   isLoading?: boolean;
-  viewMode?: ViewMode; 
 }
 
-// Mock data
-const mockData: RoleSuccessFactorsDataProp = {
-  must_haves: [
-    { text: "5+ years of experience with React and modern JavaScript", met: true },
-    { text: "Experience with state management (Redux, Context API, etc.)", met: false },
-    { text: "Strong understanding of web performance optimization", met: true },
-    { text: "Experience with responsive design and cross-browser compatibility", met: false },
-    { text: "Knowledge of modern build tools (Webpack, Babel, etc.)", met: true },
-    { text: "Experience with unit and integration testing", met: false },
-  ],
-  nice_to_haves: [
-    { text: "Experience with TypeScript", met: true },
-    { text: "Knowledge of Next.js or similar frameworks", met: false },
-    { text: "Experience with GraphQL", met: true },
-    { text: "Understanding of CI/CD pipelines", met: false },
-    { text: "Experience with design systems", met: true },
-    { text: "Contributions to open source projects", met: false },
-  ],
-}
-
-export default function RoleSuccessFactorsSection({ data, viewMode }: RoleSuccessFactorsSectionProps) {
-  const { markStepComplete } = useInterviewPrepStore()
+export default function RoleSuccessFactorsSection({ data }: RoleSuccessFactorsSectionProps) {
+  const { markStepComplete } = useInterviewPrepV3Store()
 
   useEffect(() => {
-    markStepComplete(3)
+    markStepComplete(4)
   }, [markStepComplete])
 
   return (

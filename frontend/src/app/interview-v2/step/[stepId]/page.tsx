@@ -1,3 +1,4 @@
+/*
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import StepContent from "@/components/interview-prep/step-content-new"
@@ -26,3 +27,4 @@ export default function StepPage({ params }: { params: { stepId: string } }) {
     </Suspense>
   )
 }
+*/

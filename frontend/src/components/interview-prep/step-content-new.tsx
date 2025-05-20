@@ -1,3 +1,4 @@
+/*
 // THIS FILE IS NOT CURRENTLY IN USE (as of 2025-05-18).
 // The active StepContent is located at: frontend/src/components/interview-prep/interview-prep-v2-UI/components/interview-prep/StepContent.tsx
 // Please refer to that file for current logic and debugging.
@@ -245,3 +246,4 @@ export default function StepContent({ stepId }: { stepId: number }) {
     </div>
   )
 }
+*/

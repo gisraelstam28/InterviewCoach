@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, ChevronDown, ChevronUp, Lightbulb, BookOpen, Code2, ListChecks, Brain, AlertTriangle } from "lucide-react";
+import { ExternalLink, ChevronDown, ChevronUp, Lightbulb, BookOpen, ListChecks, Brain, AlertTriangle } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { useInterviewPrepStore } from "../../../store/interview-prep-store"; 
 
@@ -54,10 +54,9 @@ const DifficultyBadge = ({ level }: { level?: 'Easy' | 'Medium' | 'Hard' }) => {
 interface TechnicalCasePrepSectionProps {
   
   data: TechnicalCasePrepSectionData | { section_6_technical_case_prep: TechnicalCasePrepSectionData } | null;
-  viewMode?: 'quick' | 'deep'; 
 }
 
-export default function TechnicalCasePrepSection({ data, viewMode }: TechnicalCasePrepSectionProps) {
+export default function TechnicalCasePrepSection({ data }: TechnicalCasePrepSectionProps) {
   // Custom H3 renderer to add more distinction for Sample Case Walkthrough sections
   const CustomH3 = ({ node, ...props }: any) => {
     // mt-6 adds top margin, pt-4 adds top padding, border-t adds a top border

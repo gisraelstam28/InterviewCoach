@@ -17,7 +17,6 @@ export interface InterviewPrepV3State {
   resumeFileIsSelected: boolean; // This WILL be persisted
   jobDescription: string;
   companyName: string;
-  industry: string;
 
   // Progress tracking
   currentStep: number;
@@ -36,7 +35,6 @@ export interface InterviewPrepV3State {
   setResumeFile: (file: File | null) => void;
   setJobDescription: (jd: string) => void;
   setCompanyName: (name: string) => void;
-  setIndustry: (industry: string) => void;
   setCurrentStep: (step: number) => void;
   markStepComplete: (step: number) => void;
   setShouldGenerateGuide: (shouldGenerate: boolean) => void;
@@ -51,7 +49,6 @@ const initialState = {
   resumeFileIsSelected: false,
   jobDescription: "",
   companyName: "",
-  industry: "",
   currentStep: 0,
   progress: 0,
   completedSteps: [],
@@ -69,7 +66,6 @@ export const useInterviewPrepV3Store = create<InterviewPrepV3State>()(
       setResumeFile: (file: File | null) => set({ resumeFile: file, resumeFileIsSelected: !!file }),
       setJobDescription: (jobDescription) => set({ jobDescription }),
       setCompanyName: (companyName) => set({ companyName }),
-      setIndustry: (industry) => set({ industry }),
       setCurrentStep: (currentStep) => set({ currentStep }),
       markStepComplete: (step) =>
         set((state) => {

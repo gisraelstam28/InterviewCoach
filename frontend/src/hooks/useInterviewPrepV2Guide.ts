@@ -29,7 +29,7 @@ export function useInterviewPrepV2Guide() {
   const [persistedGuideData, setPersistedGuideData] = useState<InterviewPrepV2Guide | null>(null);
   
   const store = useInterviewPrepV3Store(state => state);
-  const { resumeFile, jobDescription, companyName, industry, interviewGuide, shouldGenerateGuide, isGeneratingInterviewPrepGuide, jobDetailsFinalized, resumeFileIsSelected, setInterviewGuide, setIsGeneratingInterviewPrepGuide, setShouldGenerateGuide } = store;
+  const { resumeFile, jobDescription, companyName, interviewGuide, shouldGenerateGuide, isGeneratingInterviewPrepGuide, jobDetailsFinalized, resumeFileIsSelected, setInterviewGuide, setIsGeneratingInterviewPrepGuide, setShouldGenerateGuide } = store;
 
   // Log inputs for the enabled condition
   console.log('[useInterviewPrepV2Guide] Enabled condition inputs:', {
@@ -39,8 +39,6 @@ export function useInterviewPrepV2Guide() {
     jobDescriptionLength: jobDescription?.trim().length,
     companyNameExists: !!companyName,
     companyNameLength: companyName?.trim().length,
-    industryExists: !!industry,
-    industryLength: industry?.trim().length,
     jobDetailsFinalized,
     hasExistingGuide: !!interviewGuide,
     isAlreadyGenerating: isGeneratingInterviewPrepGuide,
@@ -57,15 +55,28 @@ export function useInterviewPrepV2Guide() {
     });
   }, [persistedGuideData, interviewGuide, shouldGenerateGuide, isGeneratingInterviewPrepGuide]);
 
+  const isResumeReady = !!resumeFile && resumeFileIsSelected;
+  const isJobDescriptionReady = !!jobDescription && jobDescription.trim().length > 10;
+  const isCompanyNameReady = !!companyName && companyName.trim().length > 0;
+
+  console.log('[useInterviewPrepV2Guide] Detailed enabled conditions:', {
+    isResumeReady,
+    resumeFileIsSelected, // From store selector, directly used in isResumeReady
+    isJobDescriptionReady,
+    isCompanyNameReady,
+    jobDetailsFinalized, // From store selector
+    hasInterviewGuide: !!interviewGuide, // From store selector
+    isGenerating: isGeneratingInterviewPrepGuide, // From store selector
+  });
+
   const queryResult = useQuery<InterviewPrepV2Guide, Error>({
-    enabled: !!resumeFile && resumeFileIsSelected &&
-             !!jobDescription && jobDescription.trim().length > 10 && // Ensure JD is not empty
-             !!companyName && companyName.trim().length > 0 && // Ensure company name is not empty
-             !!industry && industry.trim().length > 0 && // Ensure industry is not empty
-             jobDetailsFinalized && // Check if user has confirmed job details
-             !interviewGuide && // Don't refetch if guide already exists for these inputs
-             !isGeneratingInterviewPrepGuide, // Don't fetch if already fetching
-    queryKey: [INTERVIEW_PREP_V2_QUERY_KEY, companyName, jobDescription, resumeFileIsSelected ? "resume_present" : "resume_absent", industry, jobDetailsFinalized], // Log key parts for easier debugging
+    enabled: isResumeReady &&
+             isJobDescriptionReady &&
+             isCompanyNameReady &&
+             jobDetailsFinalized &&
+             !interviewGuide &&
+             !isGeneratingInterviewPrepGuide,
+    queryKey: [INTERVIEW_PREP_V2_QUERY_KEY, companyName, jobDescription, resumeFileIsSelected ? "resume_present" : "resume_absent", jobDetailsFinalized], // Log key parts for easier debugging
     staleTime: 5 * 60 * 1000, // Keep data fresh for 5 minutes
     queryFn: async () => {
       console.log('[useInterviewPrepV2Guide] queryFn: Entered.');
@@ -193,7 +204,6 @@ export function useInterviewPrepV2Guide() {
             job_description: jobDescriptionText,
             jd_structured: parsedJdData,
             company_name: companyName,
-            industry: industry,
           };
           console.log("useInterviewPrepV2Guide: queryFn: Guide generation request body:", genGuideBody);
 

@@ -1,7 +1,5 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useInterviewPrepStore } from '../../../../../../store/interview-prep-store';
 import { useInterviewPrepV2Guide } from '../../../../../hooks/useInterviewPrepV2Guide';
 
 export default function ExportPage() {

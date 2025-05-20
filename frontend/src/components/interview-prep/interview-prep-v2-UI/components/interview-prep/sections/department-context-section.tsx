@@ -2,13 +2,12 @@
 
 import { useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ViewMode } from "../../../store/interview-prep-store"
-import { useInterviewPrepStore } from "../../../store/interview-prep-store"
+import { useInterviewPrepV3Store } from "../../../../../../store/interview-prep-v3-store"
 import mermaid from "mermaid"
-
-interface DepartmentContextSectionProps {
-  data: any
-  viewMode: ViewMode
+// Define a local type for the OKR structure if needed, mirroring mockData or expected future structure
+interface OKRItem {
+  objective: string;
+  keyResults: string[];
 }
 
 // Mock data
@@ -69,12 +68,12 @@ const mockData = {
   ],
 }
 
-export default function DepartmentContextSection({ data, viewMode }: DepartmentContextSectionProps) {
-  const { markStepComplete } = useInterviewPrepStore()
+export default function DepartmentContextSectionV2() {
+  const { markStepComplete } = useInterviewPrepV3Store()
   const chartRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    markStepComplete(2)
+    markStepComplete(3)
   }, [markStepComplete])
 
   useEffect(() => {
@@ -87,7 +86,10 @@ export default function DepartmentContextSection({ data, viewMode }: DepartmentC
 
       try {
         // Sanitize the input before rendering
-        const sanitizedChart = mockData.orgChart.trim()
+        // section_2_department_context does not exist on InterviewPrepV2Guide type.
+        // For now, we will rely on mockData for the chart if actual data path is unavailable.
+        const chartDefinition = mockData.orgChart; 
+        const sanitizedChart = chartDefinition.trim();
         mermaid.render("org-chart", sanitizedChart).then(({ svg }) => {
           if (chartRef.current) {
             chartRef.current.innerHTML = svg
@@ -126,19 +128,19 @@ export default function DepartmentContextSection({ data, viewMode }: DepartmentC
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {(data?.okrs && Array.isArray(data.okrs) && data.okrs.length > 0) ? (
-              data.okrs.map((okr: string[], index: number) => (
+            {(mockData.okrs && Array.isArray(mockData.okrs) && mockData.okrs.length > 0) ? (
+              mockData.okrs.map((okr: OKRItem, index: number) => (
                 <div key={index} className="border-b pb-4 last:border-0 last:pb-0">
-                  <h3 className="font-semibold text-lg mb-2">Objective {index + 1}</h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {Array.isArray(okr) ? (
-                      okr.map((kr, krIndex) => (
+                  <h3 className="font-semibold text-lg mb-2">{okr.objective || `Objective ${index + 1}`}</h3>
+                  {okr.keyResults && Array.isArray(okr.keyResults) && okr.keyResults.length > 0 ? (
+                    <ul className="list-disc pl-5 space-y-1">
+                      {okr.keyResults.map((kr, krIndex) => (
                         <li key={krIndex}>{kr}</li>
-                      ))
-                    ) : (
-                      <li className="text-gray-500">No key results available.</li>
-                    )}
-                  </ul>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500 italic">No key results for this objective.</p>
+                  )}
                 </div>
               ))
             ) : (
