@@ -19,7 +19,7 @@ from prompts import (
     INTERVIEW_PREP_V2_USER_PROMPT_TEMPLATE_B_CANDIDATE_ROLE,
     INTERVIEW_PREP_V2_SYSTEM_PROMPT_C_INSIDER_CHEAT_SHEET  # Added for Call C
 )
-from interview_prep_v2_builders import build_role_success_section, build_role_understanding_fit_assessment_section, build_star_story_bank_section, build_technical_case_prep_section # Added import
+from interview_prep_v2_builders import build_company_industry_section, build_role_success_section, build_role_understanding_fit_assessment_section, build_star_story_bank_section, build_technical_case_prep_section # Added import
 from langchain_core.messages import SystemMessage, HumanMessage # Added import
 from interview_prep_v2_models import (
     JobDescriptionStructured,
@@ -247,49 +247,71 @@ async def generate_interview_prep(request: GenerateInterviewPrepRequest):
         # For now, focusing on position descriptions as primary content.
         meaningful_resume_content_str = "\n\n".join(meaningful_resume_content_parts)
 
+        # --- Pre-build Section 1: Company & Industry Insights ---
+        if request.company_name and jd_model and request.job_description:
+            logger.info(f"MAIN.PY: Before calling build_company_industry_section - Company: {request.company_name}")
+            try:
+                section_1_data = await build_company_industry_section(
+                    company_name=request.company_name,
+                    jd_structured=jd_model.model_dump(),
+                    job_description=request.job_description
+                )
+                logger.info(f"MAIN.PY: After calling build_company_industry_section - section_1_data: {section_1_data.model_dump_json(indent=2) if section_1_data else 'None'}")
+                if section_1_data:
+                    company_industry_output = CompanyIndustrySectionModel(**section_1_data.model_dump())
+                else:
+                    logger.warning("MAIN.PY: build_company_industry_section returned None or empty-like, using default for section_1.")
+            except Exception as e_s1:
+                logger.error(f"MAIN.PY: Error pre-building company_industry_section: {e_s1}", exc_info=True)
+        else:
+            logger.warning("MAIN.PY: Skipping pre-build of company_industry_section due to missing company_name, jd_model, or job_description.")
+
         # --- Pre-build Section 3: Role Success Factors ---
         if jd_model and meaningful_resume_content_str:
-            logger.info(f"MAIN.PY: Before calling build_role_success_section - jd_model.requirements: {jd_model.requirements}")
-            logger.info(f"MAIN.PY: Before calling build_role_success_section - jd_model.responsibilities: {jd_model.responsibilities}")
+            logger.info(f"MAIN.PY: Before calling build_role_success_section - jd_model.requirements: {jd_model.requirements if jd_model.requirements else 'N/A'}")
+            logger.info(f"MAIN.PY: Before calling build_role_success_section - jd_model.responsibilities: {jd_model.responsibilities if jd_model.responsibilities else 'N/A'}")
             logger.info(f"MAIN.PY: Before calling build_role_success_section - meaningful_resume_content_str: {meaningful_resume_content_str[:750]}...")
-            
-            # section_3_data = await build_role_success_section(jd_structured=jd_model, resume_bullets=meaningful_resume_content_str)
-            # 
-            # logger.info(f"MAIN.PY: After calling build_role_success_section - section_3_data: {section_3_data.model_dump_json(indent=2) if section_3_data else 'None'}")
-            # if section_3_data:
-            #     role_success_output = RoleSuccessFactorsSection(**section_3_data.model_dump())
-            # else:
-            #     logger.warning("MAIN.PY: build_role_success_section returned None or empty-like, using default for section_3.")
+            try:
+                section_3_data = await build_role_success_section(jd_structured=jd_model, resume_bullets=meaningful_resume_content_str)
+                logger.info(f"MAIN.PY: After calling build_role_success_section - section_3_data: {section_3_data.model_dump_json(indent=2) if section_3_data else 'None'}")
+                if section_3_data:
+                    role_success_output = RoleSuccessFactorsSection(**section_3_data.model_dump())
+                else:
+                    logger.warning("MAIN.PY: build_role_success_section returned None or empty-like, using default for section_3.")
+            except Exception as e_s3:
+                logger.error(f"MAIN.PY: Error pre-building role_success_section: {e_s3}", exc_info=True)
         else:
             logger.warning("MAIN.PY: Skipping pre-build of role_success_section due to missing jd_model or resume_content.")
 
         # --- Pre-build Section 4: Role Understanding & Fit Assessment ---
         if jd_model and meaningful_resume_content_str:
             logger.info(f"MAIN.PY: Before calling build_role_understanding_fit_assessment_section - jd_model info logged above.")
-
-        #     # section_4_data = await build_role_understanding_fit_assessment_section(jd_structured=jd_model, resume_bullets=meaningful_resume_content_str)
-        #     # 
-        #     # logger.info(f"MAIN.PY: After calling build_role_understanding_fit_assessment_section - section_4_data: {section_4_data.model_dump_json(indent=2) if section_4_data else 'None'}")
-        #     # if section_4_data:
-        #     #     # Assign to the variable that was originally intended for section 4's Pydantic model
-        #     #     role_understanding_fit_assessment_output = RoleUnderstandingFitAssessmentSectionModel(**section_4_data.model_dump()) # Ensure consistency with initialized variable
-        #     # else:
-        #     #     logger.warning("MAIN.PY: build_role_understanding_fit_assessment_section returned None or empty-like, using default for section_4.")
-        # else:
-        #     logger.warning("MAIN.PY: Skipping pre-build of role_understanding_fit_assessment_section due to missing jd_model or resume_content.") 
+            try:
+                section_4_data = await build_role_understanding_fit_assessment_section(jd_structured=jd_model, resume_bullets=meaningful_resume_content_str)
+                logger.info(f"MAIN.PY: After calling build_role_understanding_fit_assessment_section - section_4_data: {section_4_data.model_dump_json(indent=2) if section_4_data else 'None'}")
+                if section_4_data:
+                    role_understanding_fit_assessment_output = RoleUnderstandingFitAssessmentSectionModel(**section_4_data.model_dump())
+                else:
+                    logger.warning("MAIN.PY: build_role_understanding_fit_assessment_section returned None or empty-like, using default for section_4.")
+            except Exception as e_s4:
+                logger.error(f"MAIN.PY: Error pre-building role_understanding_fit_assessment_section: {e_s4}", exc_info=True)
+        else:
+            logger.warning("MAIN.PY: Skipping pre-build of role_understanding_fit_assessment_section due to missing jd_model or resume_content.") 
 
         # --- Pre-build Section 5: STAR Story Bank ---
-        # if resume_model:
-        #     logger.info(f"MAIN.PY: Before calling build_star_story_bank_section - resume_model available.")
-        #     # Pass the whole resume_model; the builder can extract achievements or other relevant parts.
-        #     # section_5_data = await build_star_story_bank_section(resume_structured=resume_model.model_dump(), jd_structured=jd_model.model_dump())
-        #     # logger.info(f"MAIN.PY: After calling build_star_story_bank_section - section_5_data: {section_5_data.model_dump_json(indent=2) if section_5_data else 'None'}")
-        #     # if section_5_data:
-        #     #     star_story_bank_output = StarStoryBankSectionModel(**section_5_data.model_dump())
-        #     # else:
-        #     #     logger.warning("MAIN.PY: build_star_story_bank_section returned None or empty-like, using default for section_5.")
-        # else:
-        #     logger.warning("MAIN.PY: Skipping pre-build of star_story_bank_section due to missing resume_model.")
+        if resume_model and jd_model:
+            logger.info(f"MAIN.PY: Before calling build_star_story_bank_section - resume_model and jd_model available.")
+            try:
+                section_5_data = await build_star_story_bank_section(resume_structured=resume_model.model_dump(), jd_structured=jd_model.model_dump())
+                logger.info(f"MAIN.PY: After calling build_star_story_bank_section - section_5_data: {section_5_data.model_dump_json(indent=2) if section_5_data else 'None'}")
+                if section_5_data:
+                    star_story_bank_output = StarStoryBankSectionModel(**section_5_data.model_dump())
+                else:
+                    logger.warning("MAIN.PY: build_star_story_bank_section returned None or empty-like, using default for section_5.")
+            except Exception as e_s5:
+                logger.error(f"MAIN.PY: Error pre-building star_story_bank_section: {e_s5}", exc_info=True)
+        else:
+            logger.warning("MAIN.PY: Skipping pre-build of star_story_bank_section due to missing resume_model or jd_model.")
 
         # --- Pre-build Section 6: Technical Case Prep ---
         # if jd_model:
@@ -396,12 +418,23 @@ async def generate_interview_prep(request: GenerateInterviewPrepRequest):
         llm_b_parsed_data = json.loads(llm_output_b)
         logging.info(f"LLM Call B parsed content: {llm_b_parsed_data}")
 
-        role_success_final_output = RoleSuccessFactorsSection()
-        # if 'role_success_factors' in llm_b_parsed_data:
-        #     role_success_final_output = RoleSuccessFactorsSection(**llm_b_parsed_data['role_success_factors'])
-        # elif role_success_output and (role_success_output.must_haves or role_success_output.nice_to_haves): # Use actual pre-built section 3
-        #      role_success_final_output = role_success_output # Use actual pre-built section 3 if LLM B didn't provide
-        # Ensure role_success_final_output remains its default initialized value by not reassigning here for isolated testing.
+        role_success_final_output = RoleSuccessFactorsSection() # Initialize with default
+        if 'role_success_factors' in llm_b_parsed_data and llm_b_parsed_data['role_success_factors']:
+            try:
+                role_success_final_output = RoleSuccessFactorsSection(**llm_b_parsed_data['role_success_factors'])
+                logger.info("MAIN.PY: Populated role_success_final_output from LLM B data.")
+            except Exception as e_rs_llm:
+                logger.error(f"MAIN.PY: Error populating RoleSuccessFactorsSection from LLM B data: {e_rs_llm}. Data: {llm_b_parsed_data.get('role_success_factors')}", exc_info=True)
+                # Fallback to pre-built if LLM data is malformed
+                if role_success_output and (role_success_output.must_haves or role_success_output.nice_to_haves):
+                    role_success_final_output = role_success_output
+                    logger.info("MAIN.PY: Used pre-built role_success_output due to LLM B data error.")
+        elif role_success_output and (role_success_output.must_haves or role_success_output.nice_to_haves):
+             role_success_final_output = role_success_output # Use actual pre-built section 3 if LLM B didn't provide
+             logger.info("MAIN.PY: Used pre-built role_success_output as LLM B did not provide role_success_factors.")
+        else:
+            logger.warning("MAIN.PY: role_success_factors not found in LLM B and pre-built role_success_output is empty. Using default.")
+        # Ensure role_success_final_output remains its default initialized value by not reassigning here for isolated testing. -- This comment is now misleading, removing.
         # --- Populate Section 6: Technical Case Prep ---
         if 'section_6_technical_case_prep' in llm_b_parsed_data and llm_b_parsed_data['section_6_technical_case_prep']:
             section_6_data = llm_b_parsed_data['section_6_technical_case_prep']

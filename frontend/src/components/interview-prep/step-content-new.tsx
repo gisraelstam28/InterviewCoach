@@ -160,7 +160,7 @@ export default function StepContent({ stepId }: { stepId: number }) {
         console.log('[StepContent New] Advancing from Step 1. Setting guide generation flag to true.');
         sessionStorage.setItem("guide-generation-triggered", "true");
       }
-      setCurrentStep(newStep);
+
       navigate(`/interview-v2/step/${newStep}`);
     } else {
       // Logic for when all steps are completed, e.g., navigate to export/share or summary
@@ -172,7 +172,6 @@ export default function StepContent({ stepId }: { stepId: number }) {
   const handleBack = () => {
     if (stepId > 0) {
       const newStep = stepId - 1
-      setCurrentStep(newStep);
       navigate(`/interview-v2/step/${newStep}`);
       // Clear guide generation flag if navigating back to Welcome, Resume, or JD input steps
       if (newStep <= 2) {

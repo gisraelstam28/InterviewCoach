@@ -28,8 +28,18 @@ export function useInterviewPrepV2Guide() {
   // Add a local state to persist the guide data
   const [persistedGuideData, setPersistedGuideData] = useState<InterviewPrepV2Guide | null>(null);
   
-  const store = useInterviewPrepV3Store(state => state);
-  const { resumeFile, jobDescription, companyName, interviewGuide, shouldGenerateGuide, isGeneratingInterviewPrepGuide, jobDetailsFinalized, resumeFileIsSelected, setInterviewGuide, setIsGeneratingInterviewPrepGuide, setShouldGenerateGuide } = store;
+  const resumeFile = useInterviewPrepV3Store(state => state.resumeFile);
+  const jobDescription = useInterviewPrepV3Store(state => state.jobDescription);
+  const companyName = useInterviewPrepV3Store(state => state.companyName);
+  const interviewGuide = useInterviewPrepV3Store(state => state.interviewGuide);
+  const shouldGenerateGuide = useInterviewPrepV3Store(state => state.shouldGenerateGuide);
+  const isGeneratingInterviewPrepGuide = useInterviewPrepV3Store(state => state.isGeneratingInterviewPrepGuide);
+  const jobDetailsFinalized = useInterviewPrepV3Store(state => state.jobDetailsFinalized);
+  const resumeFileIsSelected = useInterviewPrepV3Store(state => state.resumeFileIsSelected);
+
+  const setInterviewGuide = useInterviewPrepV3Store(state => state.setInterviewGuide);
+  const setIsGeneratingInterviewPrepGuide = useInterviewPrepV3Store(state => state.setIsGeneratingInterviewPrepGuide);
+  const setShouldGenerateGuide = useInterviewPrepV3Store(state => state.setShouldGenerateGuide);
 
   // Log inputs for the enabled condition
   console.log('[useInterviewPrepV2Guide] Enabled condition inputs:', {

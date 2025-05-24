@@ -88,8 +88,8 @@ export const useInterviewPrepV3Store = create<InterviewPrepV3State>()(
       name: "interview-prep-v3-storage", // Unique name for localStorage
       partialize: (state) =>
         Object.fromEntries(
-          Object.entries(state).filter(([key]) => key !== 'resumeFile')
-        ) as Omit<InterviewPrepV3State, 'resumeFile'> & { resumeFile: undefined }, // Persist everything except resumeFile
+          Object.entries(state).filter(([key]) => !['resumeFile', 'currentStep'].includes(key))
+        ) as Omit<InterviewPrepV3State, 'resumeFile' | 'currentStep'> & { resumeFile: undefined, currentStep: undefined }, // Persist everything except resumeFile and currentStep
     }
   )
 );
