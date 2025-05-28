@@ -1,86 +1,111 @@
-import React, { ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, FC } from 'react';
 import { useInterviewPrepWizardStore } from '../../../store/interviewPrepWizardStore';
 import { InterviewWizardStep } from '../../../types/interviewPrepWizard';
+import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
 
 /**
  * JobDetailsStep: Component for collecting job description and company name.
  */
-const JobDetailsStep: React.FC = () => {
-  const jobDescription = useInterviewPrepWizardStore((state) => state.jobDescription);
-  const companyName = useInterviewPrepWizardStore((state) => state.companyName);
+const JobDetailsStep: FC = () => {
   const setJobDescription = useInterviewPrepWizardStore((state) => state.setJobDescription);
   const setCompanyName = useInterviewPrepWizardStore((state) => state.setCompanyName);
   const setJobDetailsFinalized = useInterviewPrepWizardStore((state) => state.setJobDetailsFinalized);
   const setCurrentStep = useInterviewPrepWizardStore((state) => state.setCurrentStep);
+  
+  const [localJobDescription, setLocalJobDescription] = useState('');
+  const [localCompanyName, setLocalCompanyName] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
 
   const handleJobDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setJobDescription(event.target.value);
+    setLocalJobDescription(event.target.value);
   };
 
   const handleCompanyNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setCompanyName(event.target.value);
+    setLocalCompanyName(event.target.value);
+  };
+
+  const handleJobTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setJobTitle(event.target.value);
   };
 
   const handleNext = () => {
     // Basic validation: ensure fields are not empty
-    if (jobDescription.trim() && companyName.trim()) {
+    if (localJobDescription.trim() && localCompanyName.trim() && jobTitle.trim()) {
+      // Save the job details to the store
+      setJobDescription(localJobDescription);
+      setCompanyName(localCompanyName);
       setJobDetailsFinalized(true);
-      // TODO: Determine the actual next step. For now, assuming a loading step for API calls.
-      setCurrentStep(InterviewWizardStep.LoadingGuide); 
+      
+      // Move to the next step (LoadingGuide)
+      setCurrentStep(InterviewWizardStep.LoadingGuide);
     } else {
       // Simple alert for now, consider a more user-friendly error display
-      alert('Please fill in both Job Description and Company Name.');
+      alert('Please fill in all fields.');
     }
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Step 2: Provide Job Details</h2>
-      
-      <div className="mb-6">
-        <label htmlFor="jobDescription" className="block text-sm font-medium text-gray-700 mb-1">
-          Job Description
-        </label>
-        <textarea
-          id="jobDescription"
-          name="jobDescription"
-          rows={6}
-          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md p-2"
-          placeholder="Paste the job description here..."
-          value={jobDescription}
-          onChange={handleJobDescriptionChange}
-        />
-        <p className="mt-1 text-xs text-gray-500">Paste the full job description for the role you're applying for.</p>
+    <Card>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Step 2: Job Details</h2>
+      <p className="text-gray-600 mb-6">
+        Please provide the job description and company information.
+      </p>
+
+      <div className="space-y-6">
+        <div>
+          <label htmlFor="job-title" className="block text-sm font-medium text-gray-700 mb-2">
+            Job Title
+          </label>
+          <input
+            id="job-title"
+            type="text"
+            value={jobTitle}
+            onChange={handleJobTitleChange}
+            placeholder="Enter job title"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="company-name" className="block text-sm font-medium text-gray-700 mb-2">
+            Company Name
+          </label>
+          <input
+            id="company-name"
+            type="text"
+            value={localCompanyName}
+            onChange={handleCompanyNameChange}
+            placeholder="Enter company name"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="job-description" className="block text-sm font-medium text-gray-700 mb-2">
+            Job Description
+          </label>
+          <textarea
+            id="job-description"
+            value={localJobDescription}
+            onChange={handleJobDescriptionChange}
+            placeholder="Paste the full job description here..."
+            rows={8}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 resize-vertical"
+          />
+        </div>
       </div>
 
-      <div className="mb-6">
-        <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
-          Company Name
-        </label>
-        <input
-          type="text"
-          id="companyName"
-          name="companyName"
-          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border border-gray-300 rounded-md p-2"
-          placeholder="E.g., Google, Microsoft, OpenAI"
-          value={companyName}
-          onChange={handleCompanyNameChange}
-        />
-        <p className="mt-1 text-xs text-gray-500">Enter the name of the company you're interviewing with.</p>
+      <div className="flex justify-between mt-8">
+        <Button variant="secondary" onClick={() => setCurrentStep(InterviewWizardStep.ResumeUpload)}>
+          Previous
+        </Button>
+        <Button onClick={handleNext} disabled={!localJobDescription.trim() || !localCompanyName.trim() || !jobTitle.trim()}>
+          Generate Interview Guide
+        </Button>
       </div>
-
-      <div className="mt-8 flex justify-end">
-        <button
-          type="button"
-          onClick={handleNext}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Next: Generate Guide Outline
-        </button>
-      </div>
-    </div>
+    </Card>
   );
 };
 
 export default JobDetailsStep;
-
