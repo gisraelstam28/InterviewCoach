@@ -29,6 +29,16 @@ const renderBoldText = (text: string | undefined): React.ReactNode[] => {
   });
 };
 
+const cleanFormattingArtifacts = (text: string | undefined): string => {
+  if (!text) return '';
+  let cleaned = text.trim();
+  // Remove leading " : ", "• : ", or just ":" if it's the first non-whitespace char
+  cleaned = cleaned.replace(/^(\s*[:•]\s*[:\s]*)*/, '');
+  // Remove trailing "::" or ":"
+  cleaned = cleaned.replace(/[:\s]+$/, '');
+  return cleaned.trim();
+};
+
 export const TechnicalCasePrepDisplay: React.FC<TechnicalCasePrepProps> = ({
   prompt,
   sampleAnswer,
@@ -73,7 +83,7 @@ export const TechnicalCasePrepDisplay: React.FC<TechnicalCasePrepProps> = ({
               <div>
                 <h3 className="text-xl font-medium text-gray-700 mb-2">Problem</h3>
                 <div className="bg-gray-50 rounded-md p-4 text-gray-700 leading-relaxed whitespace-pre-line">
-                  {renderBoldText(caseWalkthrough.problem)}
+                  {renderBoldText(cleanFormattingArtifacts(caseWalkthrough.problem))}
                 </div>
               </div>
             )}
@@ -81,17 +91,26 @@ export const TechnicalCasePrepDisplay: React.FC<TechnicalCasePrepProps> = ({
               <div>
                 <h3 className="text-xl font-medium text-gray-700 mb-2">Approach</h3>
                 <ul className="list-inside list-disc space-y-3 pl-2">
-                  {caseWalkthrough.approach.map((step, idx) => (
-                    <li key={idx} className="text-gray-700 leading-relaxed">
-                      {step.split(":").map((part, i) =>
-                        i === 0 ? (
-                          <strong key={i} className="text-gray-700">{part.trim()}: </strong>
-                        ) : (
-                          <span key={i}>{part.trim()}</span>
-                        )
-                      )}
-                    </li>
-                  ))}
+                  {caseWalkthrough.approach.map((step, idx) => {
+                    const cleanedStep = cleanFormattingArtifacts(step);
+                    if (!cleanedStep) return null; // Don't render empty or artifact-only steps
+
+                    const prefixMatch = cleanedStep.match(/^(\d+\.\s*)/);
+                    if (prefixMatch) {
+                      const prefix = prefixMatch[1];
+                      const restOfStep = cleanedStep.substring(prefix.length);
+                      return (
+                        <li key={idx} className="text-gray-700 leading-relaxed">
+                          <strong>{prefix}</strong>{renderBoldText(restOfStep)}
+                        </li>
+                      );
+                    }
+                    return (
+                      <li key={idx} className="text-gray-700 leading-relaxed">
+                        {renderBoldText(cleanedStep)}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
@@ -99,7 +118,7 @@ export const TechnicalCasePrepDisplay: React.FC<TechnicalCasePrepProps> = ({
               <div>
                 <h3 className="text-xl font-medium text-gray-700 mb-2">Solution</h3>
                 <div className="bg-gray-50 rounded-md p-4 text-gray-700 leading-relaxed whitespace-pre-line">
-                  {renderBoldText(caseWalkthrough.solution)}
+                  {renderBoldText(cleanFormattingArtifacts(caseWalkthrough.solution))}
                 </div>
               </div>
             )}

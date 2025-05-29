@@ -105,16 +105,16 @@ class TechnicalCasePrepSectionModel(BaseModel):
     )
 
 # SECTION 7: Mock Interview & Feedback
-class MockInterviewFeedback(BaseModel):
-    question: Optional[str] = ""
-    answer: Optional[str] = "" 
-    rubric: Optional[dict] = Field(default_factory=dict) 
-    score: Optional[int] = 0 
-    feedback: Optional[str] = "" 
-
-class MockInterviewSectionModel(BaseModel):
-    questions: Optional[List[str]] = Field(default_factory=list)
-    feedback: Optional[List[MockInterviewFeedback]] = Field(default_factory=list)
+# class MockInterviewFeedback(BaseModel):
+#     question: Optional[str] = ""
+#     answer: Optional[str] = "" 
+#     rubric: Optional[dict] = Field(default_factory=dict) 
+#     score: Optional[int] = 0 
+#     feedback: Optional[str] = "" 
+#
+# class MockInterviewSectionModel(BaseModel):
+#     questions: Optional[List[str]] = Field(default_factory=list)
+#     feedback: Optional[List[MockInterviewFeedback]] = Field(default_factory=list)
 
 # SECTION 8: Insider Cheat Sheet
 class CandidateQuestionsModel(BaseModel): 
@@ -142,28 +142,28 @@ class QuestionsToAskSectionModel(BaseModel):
     general_questions: Optional[List[str]] = Field(default_factory=list)
 
 # SECTION 10: Offer & Negotiation Tips
-class SalaryRangeModel(BaseModel):
-    low: Optional[Union[str, float]] = None
-    median: Optional[Union[str, float]] = None
-    high: Optional[Union[str, float]] = None
-
-class BenefitConsiderationModel(BaseModel):
-    category: Optional[str] = None
-    items: Optional[List[str]] = Field(default_factory=list)
-
-class ResponseTemplateModel(BaseModel):
-    scenario: Optional[str] = None
-    template: Optional[str] = None
-
-class OfferNegotiationSectionModel(BaseModel):
-    salary_range: Optional[SalaryRangeModel] = None
-    negotiation_tips: Optional[List[str]] = Field(default_factory=list) 
-    benefits_to_consider: Optional[List[BenefitConsiderationModel]] = Field(default_factory=list)
-    response_templates: Optional[List[ResponseTemplateModel]] = Field(default_factory=list)
-    premium_required: Optional[bool] = False
-    comp_range_benchmarks: Optional[str] = None 
-    alternative_levers: Optional[List[str]] = Field(default_factory=list)
-    thirty_sixty_ninety_plan: Optional[str] = Field(default=None, description="A 30-60-90 day plan tailored to the role.")
+# class SalaryRangeModel(BaseModel):
+#     low: Optional[Union[str, float]] = None
+#     median: Optional[Union[str, float]] = None
+#     high: Optional[Union[str, float]] = None
+#
+# class BenefitConsiderationModel(BaseModel):
+#     category: Optional[str] = None
+#     items: Optional[List[str]] = Field(default_factory=list)
+#
+# class ResponseTemplateModel(BaseModel):
+#     scenario: Optional[str] = None
+#     template: Optional[str] = None
+#
+# class OfferNegotiationSectionModel(BaseModel):
+#     salary_range: Optional[SalaryRangeModel] = None
+#     negotiation_tips: Optional[List[str]] = Field(default_factory=list) 
+#     benefits_to_consider: Optional[List[BenefitConsiderationModel]] = Field(default_factory=list)
+#     response_templates: Optional[List[ResponseTemplateModel]] = Field(default_factory=list)
+#     premium_required: Optional[bool] = False
+#     comp_range_benchmarks: Optional[str] = None 
+#     alternative_levers: Optional[List[str]] = Field(default_factory=list)
+#     thirty_sixty_ninety_plan: Optional[str] = Field(default=None, description="A 30-60-90 day plan tailored to the role.")
 
 # Export & Share (not numbered)
 class ExportShareSectionModel(BaseModel):
@@ -213,10 +213,10 @@ class InterviewPrepV2Guide(BaseModel):
     section_4_role_understanding_fit_assessment: Optional[RoleUnderstandingFitAssessmentSectionModel] = None
     section_5_star_story_bank: Optional[StarStoryBankSectionModel] = None
     section_6_technical_case_prep: Optional[TechnicalCasePrepSectionModel] = None
-    section_7_mock_interview: Optional[MockInterviewSectionModel] = None
+    # section_7_mock_interview: Optional[MockInterviewSectionModel] = None
     section_8_insider_cheat_sheet: Optional[InsiderCheatSheetSectionModel] = None
     section_9_questions_to_ask: Optional[QuestionsToAskSectionModel] = None
-    section_10_offer_negotiation: Optional[OfferNegotiationSectionModel] = None
+    # section_10_offer_negotiation: Optional[OfferNegotiationSectionModel] = None
     export_share: Optional[ExportShareSectionModel] = None
     resume_structured: Optional[ResumeStructured] = None
     job_description_structured: Optional[JobDescriptionStructured] = None

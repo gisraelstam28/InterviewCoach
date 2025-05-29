@@ -4,8 +4,8 @@ from pydantic import BaseModel # Added for internal models
 from interview_prep_v2_models import (
     WelcomeSectionModel, CompanyIndustrySectionModel, RoleSuccessFactorsSection, EvaluatedRequirementItemModel, RoleUnderstandingFitAssessmentSectionModel, # CandidateFitMatrixSectionModel, FitMatrixRow removed
     StarStoryBankSectionModel, StarStory, TechnicalCasePrepSectionModel, CaseStudyPrompt, KeyTerm,
-    MockInterviewSectionModel, InsiderCheatSheetSectionModel, 
-    OfferNegotiationSectionModel, ExportShareSectionModel, NewsItem,
+    InsiderCheatSheetSectionModel, # MockInterviewSectionModel removed
+    ExportShareSectionModel, NewsItem, # OfferNegotiationSectionModel removed
     JobDescriptionStructured
 )
 from openai_resume_jd_parsing import parse_resume_with_openai, parse_jd_with_openai
@@ -607,41 +607,41 @@ async def build_insider_cheat_sheet_section(
         return InsiderCheatSheetSectionModel(culture_cues=[], exec_quotes=[], financial_snapshot="", glassdoor_pain_points=[], tailored_questions=[])
 
 
-def build_offer_negotiation_section(
-    company_name: Optional[str]
-) -> OfferNegotiationSectionModel:
-    """
-    Use OpenAI to generate compensation range benchmarks and alternative negotiation levers.
-    """
-    function_def = {
-        "name": "generate_offer_negotiation",
-        "description": "Generate compensation benchmarks and negotiation strategies",
-        "parameters": OfferNegotiationSectionModel.schema()
-    }
-    messages = [
-        {"role": "system", "content": (
-            "You are an expert HR consultant. For a candidate at {company_name or 'the company'}, "
-            "list 3 compensation range benchmarks by role level and geography, plus 5 creative negotiation levers (e.g., equity, bonuses, benefits). "
-            "Return JSON matching OfferNegotiationSectionModel schema."
-        )},
-        {"role": "user", "content": json.dumps({"company_name": company_name})}
-    ]
-    response = openai.chat.completions.create(
-        model="gpt-4.1-nano",
-        messages=messages,
-        temperature=0.7
-    )
-    content_str = response.choices[0].message.content
-    try:
-        parsed_args = json.loads(content_str)
-        return OfferNegotiationSectionModel(**parsed_args)
-    except json.JSONDecodeError as e:
-        print(f"Error generating offer negotiation section: {e}")
-        print(f"Problematic content: {content_str}")
-        return OfferNegotiationSectionModel(comp_range_benchmarks=[], alternative_levers=[], premium_required=False)
-    except Exception as e:
-        print(f"Error generating offer negotiation section: {e}")
-        return OfferNegotiationSectionModel(comp_range_benchmarks=[], alternative_levers=[], premium_required=False)
+# def build_offer_negotiation_section(
+#     company_name: Optional[str]
+# ) -> OfferNegotiationSectionModel:
+#     """
+#     Use OpenAI to generate compensation range benchmarks and alternative negotiation levers.
+#     """
+#     function_def = {
+#         "name": "generate_offer_negotiation",
+#         "description": "Generate compensation benchmarks and negotiation strategies",
+#         "parameters": OfferNegotiationSectionModel.schema()
+#     }
+#     messages = [
+#         {"role": "system", "content": (
+#             "You are an expert HR consultant. For a candidate at {company_name or 'the company'}, "
+#             "list 3 compensation range benchmarks by role level and geography, plus 5 creative negotiation levers (e.g., equity, bonuses, benefits). "
+#             "Return JSON matching OfferNegotiationSectionModel schema."
+#         )},
+#         {"role": "user", "content": json.dumps({"company_name": company_name})}
+#     ]
+#     response = openai.chat.completions.create(
+#         model="gpt-4.1-nano",
+#         messages=messages,
+#         temperature=0.7
+#     )
+#     content_str = response.choices[0].message.content
+#     try:
+#         parsed_args = json.loads(content_str)
+#         return OfferNegotiationSectionModel(**parsed_args)
+#     except json.JSONDecodeError as e:
+#         print(f"Error generating offer negotiation section: {e}")
+#         print(f"Problematic content: {content_str}")
+#         return OfferNegotiationSectionModel(comp_range_benchmarks=[], alternative_levers=[], premium_required=False)
+#     except Exception as e:
+#         print(f"Error generating offer negotiation section: {e}")
+#         return OfferNegotiationSectionModel(comp_range_benchmarks=[], alternative_levers=[], premium_required=False)
 
 
 def build_export_share_section() -> ExportShareSectionModel:

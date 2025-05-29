@@ -25,14 +25,12 @@ INTERVIEW_PREP_V2_SYSTEM_PROMPT_ORIGINAL = (
     "\n— section_6_technical_case_prep\n"
     "  • Add `key_terms_glossary`: up to 10 `{term, definition}` entries.\n"
     "  • For the `practice_prompts` field: Generate 1 to 3 practice prompts. Each prompt in the list MUST be an object with the following MANDATORY string fields: 'question', 'sample_answer'. Optional fields for each prompt object include: 'resources' (a list of objects, each with 'title' and 'url' string fields), 'difficulty' (string, e.g., 'Easy', 'Medium', 'Hard'), 'time_estimate' (string, e.g., '30 minutes'), and 'category' (string, e.g., 'Problem Solving'). CRITICALLY, the `practice_prompts` field itself MUST ALWAYS be included in the output, even if it's an empty list `[]` (if no suitable structured prompts can be generated).\n  • Also ensure to include: a list of key technical concepts to review ('key_concepts', list of strings), and `sample_case_walkthrough` as a single markdown-formatted string detailing a problem, approach, and solution.\n"
-    "\n- section_7_mock_interview: Generate 5-8 diverse behavioral and technical questions. For each question, provide detailed feedback on delivery, content, and structure. Output format: 'questions' (list of strings), 'feedback' (list of objects, each with 'question', 'answer' (empty string), 'rubric' (empty object), 'score' (0), 'feedback' (your critique string)).\n"
     "\n— section_8_insider_cheat_sheet\n"
     "  • Add `candidate_questions` with arrays:\n"
     "    – `role_kpi_org` (3)\n"
     "    – `strategy_market` (3)\n"
     "    – `culture_growth` (3)\n"
     "  • Also ensure to include: Provide 5-7 'culture_cues' (list of strings), 2-3 'recent_exec_quotes' (list of objects with 'quote', 'speaker', 'context_url').\n"
-    "\n- section_10_offer_negotiation: List key negotiation points ('negotiation_points', list of strings) and provide advice on 'negotiation_strategy' (string).\n"
     "\nReturn one JSON object matching the updated schema. If data is unavailable, use empty strings/arrays—do not hallucinate. Ensure all content is tailored to the specific company, role, and candidate profile. Be thorough and actionable."
 )
 
@@ -139,9 +137,7 @@ INTERVIEW_PREP_V2_USER_PROMPT_TEMPLATE_A_COMPANY = (
 )
 
 INTERVIEW_PREP_V2_USER_PROMPT_TEMPLATE_B_CANDIDATE_ROLE = (
-    "Please generate the required sections (section_0_welcome, section_4_fit_matrix, " # Note: section_3 is now built separately
-    "section_5_star_story_bank, section_6_technical_case_prep, "
-    "section_7_insider_cheat_sheet, section_8_offer_negotiation) "
+    "Please generate the required sections (section_0_welcome, section_3_role_success, section_4_fit_matrix, section_5_star_story_bank, section_6_technical_case_prep, section_9_questions_to_ask) "
     "based on the following information. Prioritize using the structured JSON data for resume and job description insights, falling back to raw text only if necessary or for supplementary context.\n\n"
     "Job Role Title: {jd_role_title}\n"
     "Company Name: {company_name}\n"

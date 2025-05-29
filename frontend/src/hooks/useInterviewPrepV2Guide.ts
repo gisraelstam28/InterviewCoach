@@ -3,19 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import { 
   InterviewPrepV2Guide, 
   ResumeStructured, 
-  JDStructured, 
-  WelcomeSection,
-  CompanyIndustrySection,
+  // JDStructured, // Removed as type is not defined
+  WelcomeSectionModel,
+  CompanyIndustrySectionModel,
   // DepartmentContextSectionType, // Removed as it's stale and deleted from types
   RoleSuccessFactorsSection,
-  StarStoryBankSection,
-  InsiderCheatSheetSection,
-  OfferNegotiationSection,
-  ExportShareSection,
-  RoleUnderstandingFitAssessmentSectionData,
-  MockInterviewSection,
-  TechnicalCasePrepSectionData,
-  ThirtySixtyNinetySection
+  StarStoryBankSectionModel,
+  InsiderCheatSheetSectionModel,
+  // OfferNegotiationSection, // Removed as feature is deprecated
+  ExportShareSectionModel,
+  RoleUnderstandingFitAssessmentSectionModel,
+  // MockInterviewSection, // Removed as feature is deprecated
+  TechnicalCasePrepSectionModel
+  // ThirtySixtyNinetySection // Removed as type is not defined
 } from "../types/interview-prep-v2";
 import { useInterviewPrepV3Store } from "../store/interview-prep-v3-store";
 import { extractTextFromPdf } from "../utils/pdfUtils";
@@ -170,13 +170,12 @@ export function useInterviewPrepV2Guide() {
           parsedResData = {
             positions: [],
             skills: [],
-            achievements: [],
-            bullets: []
+            achievements: []
           };
         }
 
         // Try to parse job description with the API
-        let parsedJdData: JDStructured;
+        let parsedJdData: any; // JDStructured type removed, using any for now
         try {
           console.log("useInterviewPrepV2Guide: Parsing job description...");
           const parseJdRes = await fetch("http://localhost:8000/api/interview-v2/parse-jd", {
@@ -244,12 +243,12 @@ export function useInterviewPrepV2Guide() {
               quick_view_enabled: true,
               deep_dive_enabled: true,
               progress: 0
-            } as WelcomeSection,
+            } as WelcomeSectionModel,
             section_1_company_industry: {
               company_overview: 'Mock company overview (API fallback).',
               recent_news: [{ title: 'Mock News (API Fallback)', summary: 'Details about mock news.'}],
               industry_drivers: ['Mock driver 1 (API Fallback)']
-            } as CompanyIndustrySection,
+            } as CompanyIndustrySectionModel,
             section_3_role_success: {
               must_haves: [{ text: 'Mock Must-Have (API Fallback)', met: false, explanation: 'Mock explanation' }],
               nice_to_haves: [],
@@ -263,42 +262,33 @@ export function useInterviewPrepV2Guide() {
               key_responsibilities_summary: ['Develop features (mock)', 'Collaborate with team (mock)'],
               overall_fit_rating: 'Good (mock)',
               fit_assessment_details: 'You have most of the required skills (mock assessment).'
-            } as RoleUnderstandingFitAssessmentSectionData,
+            } as RoleUnderstandingFitAssessmentSectionModel,
             section_5_star_story_bank: {
               stories: [{ competency: 'Problem Solving (Mock)', situation: 'Mock S', task: 'Mock T', action: 'Mock A', result: 'Mock R' }]
-            } as StarStoryBankSection,
+            } as StarStoryBankSectionModel,
             section_6_technical_case_prep: {
               key_concepts: ['Mock concept (API Fallback)'],
               prompts: [{ question: 'Mock case question (API Fallback)?', sample_answer: 'Mock sample answer.' }],
-              sample_case_walkthrough: 'Mock sample case walkthrough not available (API Fallback).',
-              key_terms_glossary: [{ term: 'Mock Term (API Fallback)', definition: 'Mock Definition' }],
+              // sample_case_walkthrough: 'Mock sample case walkthrough not available (API Fallback).', // This field does not exist on TechnicalCasePrepSectionModel
+              key_terms: [{ term: 'Mock Term (API Fallback)', definition: 'Mock Definition' }], // Corrected from key_terms_glossary to key_terms
               preparation_tips: ['Mock preparation tip (API Fallback).']
-            } as TechnicalCasePrepSectionData,
-            section_7_mock_interview: {
-              interview_format_overview: 'Mock interview format overview (API Fallback).',
-              sample_questions: [{ question_text: 'Mock sample question (API Fallback)?', suggested_answer_outline: ['Mock outline point 1'], follow_up_questions: [], tips_for_answering: []}],
-              tips_for_success: ['Mock tip for success (API Fallback).'],
-              questions: ['Mock raw question (API Fallback)?'],
-              feedback: [],
-              premium_required: false
-            } as MockInterviewSection,
+            } as TechnicalCasePrepSectionModel,
+            // section_7_mock_interview removed
             section_8_insider_cheat_sheet: {
-              culture_cues: ['Mock cue (API Fallback)'],
-              glassdoor_pain_points: ['Mock pain point (API Fallback)']
-            } as InsiderCheatSheetSection,
-            section_9_thirty_sixty_ninety: {
-              onboarding_checklist: ['Mock checklist item (API Fallback)'],
-              milestone_goals: ['Mock goal (API Fallback)'],
-              premium_required: false
-            } as ThirtySixtyNinetySection,
-            section_10_offer_negotiation: {
-              premium_required: false
-            } as OfferNegotiationSection,
+              // culture_cues: ['Mock cue (API Fallback)'], // These fields do not exist on InsiderCheatSheetSectionModel
+              // glassdoor_pain_points: ['Mock pain point (API Fallback)'] // These fields do not exist on InsiderCheatSheetSectionModel
+              // Minimal valid InsiderCheatSheetSectionModel:
+              talking_points_from_news: ['Mock talking point (API Fallback)'],
+              potential_challenges: ['Mock challenge (API Fallback)'],
+              key_stakeholders: ['Mock stakeholder (API Fallback)'],
+            } as InsiderCheatSheetSectionModel,
+            // section_9_thirty_sixty_ninety removed
+            // section_10_offer_negotiation removed
             export_share: {
-              pdf_export_enabled: true,
-              notion_export_enabled: false,
-              send_to_coach_enabled: false
-            } as ExportShareSection,
+              export_options: ['PDF (Mock)'], // Changed to match ExportShareSectionModel
+              share_platforms: ['Email (Mock)'], // Changed to match ExportShareSectionModel
+              shareable_link: 'mocklink.com/share (API Fallback)' // Changed to match ExportShareSectionModel
+            } as ExportShareSectionModel,
             ...(parsedResData ? { resume_structured: parsedResData } : {}),
             ...(parsedJdData ? { job_description_structured: parsedJdData } : {})
           };

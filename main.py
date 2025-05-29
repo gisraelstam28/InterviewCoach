@@ -33,9 +33,9 @@ from interview_prep_v2_models import (
     StarStory,  # Added import
     TechnicalCasePrepSectionModel,
     QuestionsToAskSectionModel,
-    OfferNegotiationSectionModel,
+    # OfferNegotiationSectionModel, # Removed
     InsiderCheatSheetSectionModel, # Added for InsiderCheatSheetSectionModel (was CompanyCheatSheet)
-    MockInterviewSectionModel, # Added for LLM Call B
+    # MockInterviewSectionModel, # Removed
     ExportShareSectionModel # Added this import
 )
 from job_search_agent import JobSearchAgent
@@ -231,8 +231,8 @@ async def generate_interview_prep(request: GenerateInterviewPrepRequest):
     role_understanding_fit_assessment_output = RoleUnderstandingFitAssessmentSectionModel() # Changed from CandidateFitMatrixSectionModel
     star_story_bank_output = StarStoryBankSectionModel()
     technical_case_prep_output = TechnicalCasePrepSectionModel()
-    mock_interview_output = MockInterviewSectionModel()
-    offer_negotiation_output = OfferNegotiationSectionModel()
+    # mock_interview_output = MockInterviewSectionModel()
+    # offer_negotiation_output = OfferNegotiationSectionModel()
     insider_cheat_sheet_output = InsiderCheatSheetSectionModel() # Added based on prompt B expectations
     questions_to_ask_output = QuestionsToAskSectionModel() # Initialize questions_to_ask_output
 
@@ -588,10 +588,10 @@ async def generate_interview_prep(request: GenerateInterviewPrepRequest):
         section_4_role_understanding_fit_assessment=role_understanding_fit_assessment_output, 
         section_5_star_story_bank=star_story_bank_output, 
         section_6_technical_case_prep=technical_case_prep_output, # Prioritize pre-built section 6
-        section_7_mock_interview=mock_interview_output,
+        # section_7_mock_interview=mock_interview_output,
         section_8_insider_cheat_sheet=insider_cheat_sheet_output,
         section_9_questions_to_ask=questions_to_ask_output,
-        section_10_offer_negotiation=offer_negotiation_output,
+        # section_10_offer_negotiation=offer_negotiation_output,
         export_share=ExportShareSectionModel( 
             export_options=["PDF", "Markdown"],
             share_platforms=["Email", "LinkedIn"],

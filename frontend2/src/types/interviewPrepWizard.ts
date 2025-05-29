@@ -170,18 +170,18 @@ export interface TechnicalCasePrepSectionModel {
   [key: string]: any;
 }
 
-export interface MockInterviewQuestionItem {
-  question?: string;
-  suggested_answer_points?: string[];
-  type?: string; // e.g., 'Behavioral', 'Technical'
-  [key: string]: any;
-}
-
-export interface MockInterviewSectionModel {
-  questions?: MockInterviewQuestionItem[];
-  feedback?: string[]; // General feedback points or array of feedback objects
-  [key: string]: any;
-}
+// export interface MockInterviewQuestionItem {
+//   question?: string;
+//   suggested_answer_points?: string[];
+//   type?: string; // e.g., 'Behavioral', 'Technical'
+//   [key: string]: any;
+// }
+//
+// export interface MockInterviewSectionModel {
+//   questions?: MockInterviewQuestionItem[];
+//   feedback?: string[]; // General feedback points or array of feedback objects
+//   [key: string]: any;
+// }
 
 export interface RecentExecQuoteItem {
   quote?: string;
@@ -207,24 +207,24 @@ export interface QuestionsToAskSectionModel {
   [key: string]: any;
 }
 
-export interface SalaryRange {
-  min?: number;
-  max?: number;
-  currency?: string;
-  text_representation?: string; // e.g., "$100k - $120k"
-}
-
-export interface OfferNegotiationSectionModel {
-  salary_range?: SalaryRange | string | null;
-  negotiation_tips?: string[];
-  benefits_to_consider?: string[];
-  response_templates?: string[]; // Or array of objects with title/template
-  premium_required?: boolean;
-  comp_range_benchmarks?: string | null; // Could be markdown or link
-  alternative_levers?: string[];
-  thirty_sixty_ninety_plan?: string | null; // Could be markdown
-  [key: string]: any;
-}
+// export interface SalaryRange {
+//   min?: number;
+//   max?: number;
+//   currency?: string;
+//   text_representation?: string; // e.g., "$100k - $120k"
+// }
+//
+// export interface OfferNegotiationSectionModel {
+//   salary_range?: SalaryRange | string | null;
+//   negotiation_tips?: string[];
+//   benefits_to_consider?: string[];
+//   response_templates?: string[]; // Or array of objects with title/template
+//   premium_required?: boolean;
+//   comp_range_benchmarks?: string | null; // Could be markdown or link
+//   alternative_levers?: string[];
+//   thirty_sixty_ninety_plan?: string | null; // Could be markdown
+//   [key: string]: any;
+// }
 
 export interface ExportShareSectionModel {
   export_options?: string[];
@@ -245,10 +245,10 @@ export interface InterviewPrepV2Guide {
   section_4_role_understanding_fit_assessment?: RoleUnderstandingFitAssessmentSectionModel;
   section_5_star_story_bank?: StarStoryBankSectionModel;
   section_6_technical_case_prep?: TechnicalCasePrepSectionModel;
-  section_7_mock_interview?: MockInterviewSectionModel;
+  // section_7_mock_interview?: MockInterviewSectionModel;
   section_8_insider_cheat_sheet?: InsiderCheatSheetSectionModel;
   section_9_questions_to_ask?: QuestionsToAskSectionModel;
-  section_10_offer_negotiation?: OfferNegotiationSectionModel;
+  // section_10_offer_negotiation?: OfferNegotiationSectionModel;
   export_share?: ExportShareSectionModel;
 }
 

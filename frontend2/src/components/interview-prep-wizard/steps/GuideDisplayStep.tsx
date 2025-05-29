@@ -15,14 +15,14 @@ import {
   TechnicalCasePrepSectionModel,
   TechnicalCasePrepPromptItem,
   KeyTermItem, // KeyTermItem from backend
-  MockInterviewSectionModel,
-  MockInterviewQuestionItem,
+  // MockInterviewSectionModel,
+  // MockInterviewQuestionItem,
   InsiderCheatSheetSectionModel,
   RecentExecQuoteItem,
   QuestionsToAskSectionModel,
-  OfferNegotiationSectionModel,
-  SalaryRange,
-  ExportShareSectionModel
+  // OfferNegotiationSectionModel,
+  // SalaryRange,
+  // ExportShareSectionModel, // Removed
   // CaseWalkthroughModel and GlossaryTerm are not used from here or not found
 } from '../../../types/interviewPrepWizard';
 
@@ -166,7 +166,7 @@ const renderSection = (title: string, content: any, sectionKey: keyof InterviewP
   else if (sectionKey === 'section_4_role_understanding_fit_assessment') IconComponent = UserGroupIcon;
   else if (sectionKey === 'section_5_star_story_bank') IconComponent = StarIcon;
   else if (sectionKey === 'section_6_technical_case_prep') IconComponent = AcademicCapIcon;
-  else if (sectionKey === 'section_7_mock_interview') IconComponent = ChatBubbleLeftRightIcon;
+  // else if (sectionKey === 'section_7_mock_interview') IconComponent = ChatBubbleLeftRightIcon; // Removed
   else if (sectionKey === 'section_8_insider_cheat_sheet') IconComponent = LightBulbIcon;
   else if (sectionKey === 'section_9_questions_to_ask') IconComponent = PresentationChartLineIcon;
 
@@ -349,27 +349,7 @@ const renderSection = (title: string, content: any, sectionKey: keyof InterviewP
     } else {
       displayContent = <p className="text-gray-500">No technical or case prep information available for this section.</p>;
     }
-  } else if (sectionKey === 'section_7_mock_interview') {
-    const mockInterviewContent = content as MockInterviewSectionModel;
-    if (mockInterviewContent.questions && mockInterviewContent.questions.length > 0) {
-      const questions = mockInterviewContent.questions.map((q: MockInterviewQuestionItem, index: number) => (
-        <div key={index} className="mb-4 p-4 bg-gray-50 rounded-lg">
-          <p className="font-semibold text-gray-700">{q.question}</p>
-          {q.sample_answer && <p className="text-sm text-gray-600 mt-1 whitespace-pre-line"><strong>Sample Answer:</strong> {q.sample_answer}</p>}
-          {q.tips && q.tips.length > 0 && (
-            <div className="mt-2">
-              <p className="text-xs font-semibold text-gray-500">Tips:</p>
-              <ul className="list-disc list-inside pl-2 text-xs text-gray-500">
-                {q.tips.map((tip: string, tipIndex: number) => <li key={tipIndex}>{tip}</li>)}
-              </ul>
-            </div>
-          )}
-        </div>
-      ));
-      displayContent = <div className="space-y-4">{questions}</div>;
-    } else {
-      displayContent = <p className="text-gray-500">No mock interview questions available.</p>;
-    }
+  // --- Mock Interview Section Removed --- 
   } else if (sectionKey === 'section_8_insider_cheat_sheet') {
     const cheatSheetContent = content as InsiderCheatSheetSectionModel;
     const elements: React.ReactNode[] = [];
@@ -458,25 +438,7 @@ const renderSection = (title: string, content: any, sectionKey: keyof InterviewP
     } else {
       displayContent = <p className="text-gray-500">No suggested questions to ask are available.</p>;
     }
-  } else if (sectionKey === 'section_10_offer_negotiation') {
-    const offerNegotiationContent = content as OfferNegotiationSectionModel;
-    const elements: React.ReactNode[] = [];
-    const propertyOrder: (keyof OfferNegotiationSectionModel)[] = ['negotiation_levers', 'salary_research_summary', 'counter_offer_strategy', 'walk_away_point', 'non_salary_benefits_to_consider', 'timeline_and_communication_tips'];
-    if (offerNegotiationContent.expected_salary_range) {
-      elements.push(
-        renderKeyValue(
-          'Expected Salary Range',
-          `Min: ${offerNegotiationContent.expected_salary_range.min_salary}, Max: ${offerNegotiationContent.expected_salary_range.max_salary}, Currency: ${offerNegotiationContent.expected_salary_range.currency}`
-        )
-      );
-    }
-    for (const key of propertyOrder) {
-      const value = offerNegotiationContent[key];
-      if (value === undefined || value === null) continue;
-      const title = (key as string).split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-      elements.push(renderKeyValue(title, value, typeof value === 'string' && value.length > 80));
-    }
-    displayContent = <div className="space-y-4">{elements}</div>;
+  // --- Offer Negotiation Section Removed --- 
   } else if (sectionKey === 'section_0_welcome' || sectionKey === 'section_11_export_share') {
     displayContent = renderObject(content, 0);
   } else {
@@ -550,11 +512,11 @@ const GuideDisplayStep: React.FC = () => {
     section_4_role_understanding_fit_assessment,
     section_5_star_story_bank,
     section_6_technical_case_prep,
-    section_7_mock_interview,
+    // section_7_mock_interview, // Removed
     section_8_insider_cheat_sheet,
     section_9_questions_to_ask,
-    section_10_offer_negotiation,
-    export_share
+    // section_10_offer_negotiation, // Removed
+    // export_share // Removed
   } = guide || {};
 
   const sections: Array<{ id: string; title: string; hasContent: boolean }> = [
@@ -564,11 +526,11 @@ const GuideDisplayStep: React.FC = () => {
     { id: 'section_4_role_understanding_fit_assessment', title: 'Role Understanding & Fit Assessment', hasContent: !!(section_4_role_understanding_fit_assessment && typeof section_4_role_understanding_fit_assessment === 'object' && Object.keys(section_4_role_understanding_fit_assessment).length > 0) },
     { id: 'section_5_star_story_bank', title: 'STAR Story Bank', hasContent: !!(section_5_star_story_bank && typeof section_5_star_story_bank === 'object' && Object.keys(section_5_star_story_bank).length > 0) },
     { id: 'section_6_technical_case_prep', title: 'Technical & Case Prep', hasContent: !!(section_6_technical_case_prep && typeof section_6_technical_case_prep === 'object' && Object.keys(section_6_technical_case_prep).length > 0) },
-    { id: 'section_7_mock_interview', title: 'Mock Interview Practice', hasContent: !!(section_7_mock_interview && typeof section_7_mock_interview === 'object' && Object.keys(section_7_mock_interview).length > 0) },
+    // { id: 'section_7_mock_interview', title: 'Mock Interview Practice', hasContent: !!(section_7_mock_interview && typeof section_7_mock_interview === 'object' && Object.keys(section_7_mock_interview).length > 0) }, // Removed
     { id: 'section_8_insider_cheat_sheet', title: 'Insider Cheat Sheet', hasContent: !!(section_8_insider_cheat_sheet && typeof section_8_insider_cheat_sheet === 'object' && Object.keys(section_8_insider_cheat_sheet).length > 0) },
     { id: 'section_9_questions_to_ask', title: 'Questions to Ask Interviewers', hasContent: !!(section_9_questions_to_ask && typeof section_9_questions_to_ask === 'object' && Object.keys(section_9_questions_to_ask).length > 0) },
-    { id: 'section_10_offer_negotiation', title: 'Offer Negotiation Strategy', hasContent: !!(section_10_offer_negotiation && typeof section_10_offer_negotiation === 'object' && Object.keys(section_10_offer_negotiation).length > 0) },
-    { id: 'export_share', title: 'Export & Share Options', hasContent: !!(export_share && typeof export_share === 'object' && Object.keys(export_share).length > 0) },
+    // { id: 'section_10_offer_negotiation', title: 'Offer Negotiation Strategy', hasContent: !!(section_10_offer_negotiation && typeof section_10_offer_negotiation === 'object' && Object.keys(section_10_offer_negotiation).length > 0) }, // Removed
+    // { id: 'export_share', title: 'Export & Share Options', hasContent: !!(export_share && typeof export_share === 'object' && Object.keys(export_share).length > 0) }, // Removed
   ];
 
   const [expandedSections, setExpandedSections] = React.useState<string[]>([]); 
@@ -630,11 +592,11 @@ const GuideDisplayStep: React.FC = () => {
             {renderSection('Role Understanding & Fit Assessment', section_4_role_understanding_fit_assessment, 'section_4_role_understanding_fit_assessment', () => toggleSection('section_4_role_understanding_fit_assessment'), !expandedSections.includes('section_4_role_understanding_fit_assessment'))}
             {renderSection('STAR Story Bank', section_5_star_story_bank, 'section_5_star_story_bank', () => toggleSection('section_5_star_story_bank'), !expandedSections.includes('section_5_star_story_bank'))}
             {renderSection('Technical & Case Prep', section_6_technical_case_prep, 'section_6_technical_case_prep', () => toggleSection('section_6_technical_case_prep'), !expandedSections.includes('section_6_technical_case_prep'))}
-            {renderSection('Mock Interview Practice', section_7_mock_interview, 'section_7_mock_interview', () => toggleSection('section_7_mock_interview'), !expandedSections.includes('section_7_mock_interview'))}
+            {/* {renderSection('Mock Interview Practice', section_7_mock_interview, 'section_7_mock_interview', () => toggleSection('section_7_mock_interview'), !expandedSections.includes('section_7_mock_interview'))} */}
             {renderSection('Insider Cheat Sheet', section_8_insider_cheat_sheet, 'section_8_insider_cheat_sheet', () => toggleSection('section_8_insider_cheat_sheet'), !expandedSections.includes('section_8_insider_cheat_sheet'))}
             {renderSection('Questions to Ask Interviewers', section_9_questions_to_ask, 'section_9_questions_to_ask', () => toggleSection('section_9_questions_to_ask'), !expandedSections.includes('section_9_questions_to_ask'))}
-            {renderSection('Offer Negotiation Strategy', section_10_offer_negotiation, 'section_10_offer_negotiation', () => toggleSection('section_10_offer_negotiation'), !expandedSections.includes('section_10_offer_negotiation'))}
-            {renderSection('Export & Share Options', export_share, 'export_share', () => toggleSection('export_share'), !expandedSections.includes('export_share'))}
+            {/* {renderSection('Offer Negotiation Strategy', section_10_offer_negotiation, 'section_10_offer_negotiation', () => toggleSection('section_10_offer_negotiation'), !expandedSections.includes('section_10_offer_negotiation'))} */}
+            {/* {renderSection('Export & Share Options', export_share, 'export_share', () => toggleSection('export_share'), !expandedSections.includes('export_share'))} */}
           </div>
         </div>
       </div>
