@@ -108,6 +108,7 @@ class CatchAllMiddleware(BaseHTTPMiddleware):
 origins = [
     "http://localhost:5180",  # Frontend origin currently reported
     "http://localhost:5173",  # Default Vite origin
+    "https://interviewcoachapp.com",
     # Add any other origins if needed, e.g., your deployed frontend URL
 ]
 
