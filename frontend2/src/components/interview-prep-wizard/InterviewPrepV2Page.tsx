@@ -8,11 +8,19 @@ import JobDetailsStep from './steps/JobDetailsStep';
 import { LoadingStep } from './steps/LoadingStep';
 import GuideDisplayStep from './steps/GuideDisplayStep';
 import { Layout } from './ui/Layout'; // Import the Layout component
+import StepProgressBar from './ui/StepProgressBar';
 
 /**
  * InterviewPrepV2Page is the main orchestrator for the multi-step interview prep wizard.
  * It controls the flow and renders the current step based on the Zustand store state.
  */
+const wizardSteps = [
+  { id: InterviewWizardStep.ResumeUpload, name: 'Resume Upload' },
+  { id: InterviewWizardStep.JobDetails, name: 'Job Details' },
+  { id: InterviewWizardStep.LoadingGuide, name: 'Processing' }, // Or 'Generating Guide'
+  { id: InterviewWizardStep.GuideDisplay, name: 'View Guide' },
+];
+
 const InterviewPrepV2Page: React.FC = () => {
   const currentStep = useInterviewPrepWizardStore((state) => state.currentStep);
   // const setCurrentStep = useInterviewPrepWizardStore((state) => state.actions.setCurrentStep); // Example action usage
@@ -49,18 +57,7 @@ const InterviewPrepV2Page: React.FC = () => {
         <div className="text-base text-gray-500">Personalized interview preparation powered by AI</div>
       </header>
       
-      {/* Placeholder for a Step Progress Bar - to be implemented later */}
-      <div className="mb-8 p-4 bg-gray-100 rounded-lg text-center shadow">
-        <p className="text-sm text-gray-600">Current Step:</p>
-        <p className="text-lg font-semibold text-gray-700">{currentStep}</p>
-        {/* Example buttons to test step transitions - remove later */}
-        {/* <div className="mt-4 space-x-2">
-          <button onClick={() => setCurrentStep(InterviewWizardStep.ResumeUpload)} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">To Resume</button>
-          <button onClick={() => setCurrentStep(InterviewWizardStep.JobDetails)} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">To Job Details</button>
-          <button onClick={() => setCurrentStep(InterviewWizardStep.LoadingGuide)} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">To Loading</button>
-          <button onClick={() => setCurrentStep(InterviewWizardStep.GuideDisplay)} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">To Guide</button>
-        </div> */}
-      </div>
+      <StepProgressBar steps={wizardSteps} currentStepId={currentStep} />
 
       {/* The step content (e.g., ResumeUploadStep) will render its own Card component */}
       {renderStepContent()}

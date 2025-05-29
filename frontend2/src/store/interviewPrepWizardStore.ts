@@ -26,18 +26,18 @@ const createUserInputSlice: StateCreator<
   [],
   UserInputSlice
 > = (set) => ({
-  resumeFile: null,
+  resumeText: null,
   jobDescription: '',
   companyName: '',
   jobDetailsFinalized: false,
-  setResumeFile: (file: ResumeFile) => set({ resumeFile: file }),
+  setResumeText: (text: string | null) => set({ resumeText: text }),
   setJobDescription: (jd: string) => set({ jobDescription: jd }),
   setCompanyName: (name: string) => set({ companyName: name }),
   setJobDetailsFinalized: (finalized: boolean) =>
     set({ jobDetailsFinalized: finalized }),
   resetUserInput: () =>
     set({
-      resumeFile: null,
+      resumeText: null,
       jobDescription: '',
       companyName: '',
       jobDetailsFinalized: false,

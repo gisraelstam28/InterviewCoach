@@ -112,39 +112,125 @@ export interface CalendarInvitesSectionModel {
 }
 
 export interface RoleSuccessSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  must_haves?: string[];
+  nice_to_haves?: string[];
+  job_duties?: string[];
+  qualifications?: string[];
+  overall_readiness?: string | null; // Or a more structured readiness score
+  focus_recommendations?: string[];
+  [key: string]: any;
 }
 
 export interface RoleUnderstandingFitAssessmentSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  role_summary?: string;
+  key_responsibilities_summary?: string[];
+  overall_fit_rating?: string; // e.g., "High", "Medium", "Low" or a numeric score
+  fit_assessment_details?: string; // Could be markdown
+  [key: string]: any;
+}
+
+export interface StarStoryItem {
+  situation?: string;
+  task?: string;
+  action?: string;
+  result?: string;
+  title?: string; // Optional title for the story
+  keywords?: string[];
+  [key: string]: any;
 }
 
 export interface StarStoryBankSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  stories?: StarStoryItem[];
+  [key: string]: any;
+}
+
+export interface TechnicalCasePrepPromptItem {
+  question?: string;
+  sample_answer?: string;
+  resources?: string[]; // Assuming array of strings or resource links
+  difficulty?: string;
+  time_estimate?: string;
+  category?: string;
+  [key: string]: any;
+}
+
+export interface KeyTermItem {
+  term?: string;
+  definition?: string;
+  related_terms?: string[];
+  [key: string]: any;
 }
 
 export interface TechnicalCasePrepSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  key_concepts?: string[];
+  prompts?: TechnicalCasePrepPromptItem[];
+  sample_case_walkthrough?: string; // Could be markdown
+  key_terms_glossary?: KeyTermItem[];
+  preparation_tips?: string[];
+  [key: string]: any;
+}
+
+export interface MockInterviewQuestionItem {
+  question?: string;
+  suggested_answer_points?: string[];
+  type?: string; // e.g., 'Behavioral', 'Technical'
+  [key: string]: any;
 }
 
 export interface MockInterviewSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  questions?: MockInterviewQuestionItem[];
+  feedback?: string[]; // General feedback points or array of feedback objects
+  [key: string]: any;
+}
+
+export interface RecentExecQuoteItem {
+  quote?: string;
+  speaker?: string;
+  context_url?: string;
+  [key: string]: any;
 }
 
 export interface InsiderCheatSheetSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  culture_cues?: string[];
+  recent_exec_quotes?: RecentExecQuoteItem[];
+  financial_snapshot?: string;
+  glassdoor_pain_points?: string[];
+  tailored_questions?: string[];
+  [key: string]: any;
 }
 
 export interface QuestionsToAskSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  for_hiring_manager?: string[];
+  for_peers_team?: string[];
+  for_leadership?: string[];
+  general_questions?: string[];
+  [key: string]: any;
+}
+
+export interface SalaryRange {
+  min?: number;
+  max?: number;
+  currency?: string;
+  text_representation?: string; // e.g., "$100k - $120k"
 }
 
 export interface OfferNegotiationSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  salary_range?: SalaryRange | string | null;
+  negotiation_tips?: string[];
+  benefits_to_consider?: string[];
+  response_templates?: string[]; // Or array of objects with title/template
+  premium_required?: boolean;
+  comp_range_benchmarks?: string | null; // Could be markdown or link
+  alternative_levers?: string[];
+  thirty_sixty_ninety_plan?: string | null; // Could be markdown
+  [key: string]: any;
 }
 
 export interface ExportShareSectionModel {
-  [key: string]: any; // Placeholder - Define based on backend Pydantic model
+  export_options?: string[];
+  share_platforms?: string[];
+  shareable_link?: string;
+  [key: string]: any;
 }
 
 /**
@@ -169,11 +255,11 @@ export interface InterviewPrepV2Guide {
 // --- Zustand Store State Types ---
 
 export interface UserInputSlice {
-  resumeFile: ResumeFile;
+  resumeText: string | null;
   jobDescription: string; // Raw JD text from user input
   companyName: string;
   jobDetailsFinalized: boolean;
-  setResumeFile: (file: ResumeFile) => void;
+  setResumeText: (text: string | null) => void;
   setJobDescription: (jd: string) => void;
   setCompanyName: (name: string) => void;
   setJobDetailsFinalized: (finalized: boolean) => void;

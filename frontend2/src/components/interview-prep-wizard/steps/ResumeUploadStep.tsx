@@ -1,4 +1,8 @@
 import React, { useState, ChangeEvent, FC } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Set up the worker source for pdfjs-dist
+pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
 import { useInterviewPrepWizardStore } from '../../../store/interviewPrepWizardStore';
 import { InterviewWizardStep } from '../../../types/interviewPrepWizard';
 import { Card } from '../ui/Card';
@@ -8,7 +12,8 @@ import { Button } from '../ui/Button';
  * ResumeUploadStep: Component for handling resume file upload.
  */
 const ResumeUploadStep: FC = () => {
-  const setResumeFile = useInterviewPrepWizardStore((state) => state.setResumeFile);
+  const setResumeText = useInterviewPrepWizardStore((state) => state.setResumeText);
+  const resumeTextFromStore = useInterviewPrepWizardStore((state) => state.resumeText);
   const setCurrentStep = useInterviewPrepWizardStore((state) => state.setCurrentStep);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -16,19 +21,69 @@ const ResumeUploadStep: FC = () => {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Basic validation (e.g., file type, size) can be added here
-      // For now, just accept any file
-      setResumeFile(file);
       setSelectedFileName(file.name);
       setFileError(null);
+
+      if (file.type === 'application/pdf') {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          if (e.target?.result) {
+            try {
+              const typedArray = new Uint8Array(e.target.result as ArrayBuffer);
+              const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+              let fullText = '';
+              for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map((item: any) => item.str).join(' ') + '\n';
+              }
+              setResumeText(fullText);
+            } catch (error) {
+              console.error('Error parsing PDF:', error);
+              setFileError('Error parsing PDF. Please try a different file or format.');
+              setResumeText(null);
+            }
+          }
+        };
+        reader.onerror = () => {
+          console.error('Error reading file for PDF parsing');
+          setFileError('Error reading file. Please try again.');
+          setResumeText(null);
+        };
+        reader.readAsArrayBuffer(file);
+      } else if (file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            setResumeText(e.target.result as string);
+          } else {
+            setFileError('Could not read text file.');
+            setResumeText(null);
+          }
+        };
+        reader.onerror = () => {
+          console.error('Error reading text file');
+          setFileError('Error reading file. Please try again.');
+          setResumeText(null);
+        };
+        reader.readAsText(file);
+      } else if (file.type === 'application/msword' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        setFileError('DOC/DOCX files are not fully supported for automatic text extraction. Please convert to PDF or TXT.');
+        setResumeText(null); // Or attempt a more complex extraction if a library is added later
+        setSelectedFileName(file.name); // Still show selected file name
+      } else {
+        setFileError('Unsupported file type. Please upload a PDF, DOCX, or TXT file.');
+        setResumeText(null);
+        setSelectedFileName(null);
+      }
     } else {
-      setResumeFile(null);
+      setResumeText(null);
       setSelectedFileName(null);
     }
   };
 
   const handleNext = () => {
-    if (selectedFileName) {
+    if (resumeTextFromStore && selectedFileName) { // Check if text was successfully extracted and stored
       setCurrentStep(InterviewWizardStep.JobDetails);
     } else {
       setFileError('Please select a resume file to continue.');
@@ -65,7 +120,7 @@ const ResumeUploadStep: FC = () => {
       </div>
 
       <div className="flex justify-end">
-        <Button onClick={handleNext} disabled={!selectedFileName}>
+        <Button onClick={handleNext} disabled={!resumeTextFromStore || !selectedFileName}>
           Next: Add Job Details
         </Button>
       </div>

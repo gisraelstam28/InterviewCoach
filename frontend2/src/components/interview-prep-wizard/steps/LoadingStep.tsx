@@ -31,7 +31,7 @@ const readFileAsText = (file: File): Promise<string> => {
 
 export const LoadingStep = () => {
   // --- Zustand State and Actions ---
-  const resumeFile = useInterviewPrepWizardStore(state => state.resumeFile);
+  const resumeText = useInterviewPrepWizardStore(state => state.resumeText); // Changed from resumeFile
   const jobDescription = useInterviewPrepWizardStore(state => state.jobDescription);
   const companyName = useInterviewPrepWizardStore(state => state.companyName);
   // const rawResumeText = useInterviewPrepWizardStore(state => state.rawResumeText); // For chaining
@@ -39,7 +39,7 @@ export const LoadingStep = () => {
   // const parsedJobDescriptionData = useInterviewPrepWizardStore(state => state.parsedJobDescriptionData); // For chaining
 
   const setCurrentStep = useInterviewPrepWizardStore((state) => state.setCurrentStep);
-  const setRawResumeText = useInterviewPrepWizardStore((state) => state.setRawResumeText);
+  const setRawResumeText = useInterviewPrepWizardStore((state) => state.setRawResumeText); // This specific setter is used by the mutation directly
   const setParsedResumeData = useInterviewPrepWizardStore((state) => state.setParsedResumeData);
   const setParsedJobDescriptionData = useInterviewPrepWizardStore((state) => state.setParsedJobDescriptionData);
   const setInterviewGuide = useInterviewPrepWizardStore((state) => state.setInterviewGuide);
@@ -58,14 +58,16 @@ export const LoadingStep = () => {
   const parseResumeMutation = useMutation<
     ParseResumeResponseData,
     Error,
-    { resumeFile: File }
+    void // Changed: mutation takes no arguments, gets resumeText from store
   >({
-    mutationFn: async ({ resumeFile: fileToParse }) => {
-      if (!fileToParse) throw new Error('Resume file is missing.');
-      const resumeTextContent = await readFileAsText(fileToParse);
-      // Set raw_resume_text to Zustand store immediately after reading the file
-      useInterviewPrepWizardStore.getState().setRawResumeText(resumeTextContent);
-      const payload: ParseResumeRequestData = { resume_text: resumeTextContent };
+    mutationFn: async () => { // No longer takes resumeFile as argument
+      const resumeTextFromStore = useInterviewPrepWizardStore.getState().resumeText;
+      if (!resumeTextFromStore) {
+        throw new Error('Resume text is missing from the store. Cannot parse.');
+      }
+      // Set raw_resume_text to Zustand store with the text we are about to send
+      useInterviewPrepWizardStore.getState().setRawResumeText(resumeTextFromStore);
+      const payload: ParseResumeRequestData = { resume_text: resumeTextFromStore };
       return parseResumeAPI(payload);
     },
     onMutate: () => {
@@ -173,11 +175,12 @@ export const LoadingStep = () => {
   // --- Effect to Start the Process ---
   useEffect(() => {
     // Trigger the first mutation if resumeFile is present and it hasn't run or failed
-    if (resumeFile && parseResumeMutation.isIdle && !parseResumeMutation.isError) {
-      parseResumeMutation.mutate({ resumeFile });
+    // Trigger the first mutation if resumeText is present and it hasn't run or failed
+    if (resumeText && parseResumeMutation.isIdle && !parseResumeMutation.isError) {
+      parseResumeMutation.mutate(); // Call without arguments
     }
     // Chaining is handled in onSuccess of previous mutations
-  }, [resumeFile, parseResumeMutation]); // Only depends on the first step's trigger conditions
+  }, [resumeText, parseResumeMutation]); // Depends on resumeText now // Only depends on the first step's trigger conditions
 
   // --- Loading and Error Display Logic ---
   const isLoading = 
