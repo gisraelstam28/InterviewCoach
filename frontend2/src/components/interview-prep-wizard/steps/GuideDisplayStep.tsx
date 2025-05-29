@@ -1,4 +1,7 @@
 import React from 'react';
+import { RoleCriterionDisplay, RoleCriterionItem } from '../ui/RoleCriterionDisplay';
+import { StoryBankDisplay, StoryDisplayItem } from '../ui/StoryBankDisplay';
+import { TechnicalCasePrepDisplay, CaseStep } from '../ui/TechnicalCasePrepDisplay';
 import { useInterviewPrepWizardStore } from '../../../store/interviewPrepWizardStore'; 
 import {
   InterviewPrepV2Guide,
@@ -11,7 +14,7 @@ import {
   StarStoryItem,
   TechnicalCasePrepSectionModel,
   TechnicalCasePrepPromptItem,
-  KeyTermItem,
+  KeyTermItem, // KeyTermItem from backend
   MockInterviewSectionModel,
   MockInterviewQuestionItem,
   InsiderCheatSheetSectionModel,
@@ -20,6 +23,7 @@ import {
   OfferNegotiationSectionModel,
   SalaryRange,
   ExportShareSectionModel
+  // CaseWalkthroughModel and GlossaryTerm are not used from here or not found
 } from '../../../types/interviewPrepWizard';
 
 import {
@@ -116,7 +120,7 @@ const renderObject = (obj: any, level: number = 0, isSubObject: boolean = false)
     }
     // Generic array rendering
     return (
-      <ul className={`list-disc pl-5 space-y-1.5 mt-1 ${level > 0 ? 'ml-4' : ''}`}> {/* Increased space-y */} 
+      <ul className={`list-disc pl-6 mt-4 space-y-1.5${level > 0 ? 'ml-4' : ''}`}> {/* Increased space-y */} 
         {obj.map((item, index) => (
           <li key={index} className="text-base text-gray-700 leading-relaxed">
             {renderObject(item, level + 1, true)}
@@ -155,7 +159,7 @@ const renderSection = (title: string, content: any, sectionKey: keyof InterviewP
   if (!content || (typeof content === 'object' && content !== null && Object.keys(content).length === 0 && !Array.isArray(content))) return null;
 
   let displayContent;
-  let IconComponent: React.ElementType = DocumentTextIcon; 
+  let IconComponent: React.ElementType = DocumentTextIcon;
   if (sectionKey === 'section_1_company_industry') IconComponent = BriefcaseIcon;
   else if (sectionKey === 'section_2_calendar_invites') IconComponent = CalendarDaysIcon;
   else if (sectionKey === 'section_3_role_success') IconComponent = ChartBarIcon;
@@ -165,48 +169,341 @@ const renderSection = (title: string, content: any, sectionKey: keyof InterviewP
   else if (sectionKey === 'section_7_mock_interview') IconComponent = ChatBubbleLeftRightIcon;
   else if (sectionKey === 'section_8_insider_cheat_sheet') IconComponent = LightBulbIcon;
   else if (sectionKey === 'section_9_questions_to_ask') IconComponent = PresentationChartLineIcon;
-  
-  if (typeof content === 'string' || typeof content === 'number' || React.isValidElement(content)) {
-    // For simple strings/numbers, render directly without prose for more width control
-    if (typeof content === 'string' || typeof content === 'number') {
-      displayContent = <div className="prose max-w-none text-gray-700 text-base">{content}</div>; 
-    } else { // It's a React element, render as is
-      displayContent = content;
+
+  if (sectionKey === 'section_3_role_success') {
+    const roleSuccessContent = content as RoleSuccessSectionModel;
+    const elements: React.ReactNode[] = [];
+    const propertyOrder: (keyof RoleSuccessSectionModel)[] = ['must_haves', 'nice_to_haves', 'qualifications', 'job_duties', 'overall_readiness', 'focus_recommendations'];
+    for (const key of propertyOrder) {
+      const value = roleSuccessContent[key];
+      if (value === undefined || value === null) continue;
+      const title = (key as string).split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      if ((key === 'must_haves' || key === 'nice_to_haves') && Array.isArray(value) && value.length > 0 && typeof value[0] === 'object' && 'text' in value[0] && 'met' in value[0] && 'explanation' in value[0]) {
+        const items = value.filter(item => typeof item.text === 'string' && typeof item.met === 'boolean' && typeof item.explanation === 'string') as RoleCriterionItem[];
+        if (items.length > 0) {
+          elements.push(
+            <div key={key} className='mb-6'>
+              <h4 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h4>
+              <RoleCriterionDisplay items={items} />
+            </div>
+          );
+        }
+      } else if (Array.isArray(value)) {
+        elements.push(
+          <div key={key} className="mb-4">
+            <strong className="text-md font-semibold text-gray-900 block mb-2">{title}:</strong>
+            <ul className="list-disc pl-6 mt-1 space-y-1">
+              {value.map((item: any, index: number) => (
+                <li key={index} className="text-base text-gray-700 leading-relaxed">{renderObject(item, 0, true)}</li>
+              ))}
+            </ul>
+          </div>
+        );
+      } else if (typeof value === 'object' && value !== null) {
+        elements.push(
+          <div key={key} className="mb-4">
+            <strong className="text-md font-semibold text-gray-900 block mb-2">{title}:</strong>
+            {renderObject(value, 0, true)}
+          </div>
+        );
+      } else {
+        elements.push(renderKeyValue(title, value, typeof value === 'string' && value.length > 80));
+      }
     }
-  } else if (Array.isArray(content)) {
-    displayContent = (
-      <ul className="list-disc pl-5 space-y-2">
-        {content.map((item, index) => (
-          <li key={index} className="text-gray-700 text-base"> 
-            {typeof item === 'object' && item !== null ? renderObject(item) : item}
-          </li>
-        ))}
-      </ul>
-    );
-  } else if (typeof content === 'object' && content !== null) {
-    displayContent = renderObject(content as { [key: string]: any });
+    displayContent = <div className="space-y-6">{elements}</div>;
+  } else if (sectionKey === 'section_4_role_understanding_fit_assessment') {
+    const fitContent = content as RoleUnderstandingFitAssessmentSectionModel;
+    const elements: React.ReactNode[] = [];
+    const propertyOrder: (keyof RoleUnderstandingFitAssessmentSectionModel)[] = ['role_summary', 'key_responsibilities_summary', 'overall_fit_rating', 'fit_assessment_details'];
+    
+    for (const key of propertyOrder) {
+      const value = fitContent[key];
+      if (value === undefined || (value === null && key !== 'fit_assessment_details')) continue;
+
+      const title = (key as string).split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+      if (key === 'fit_assessment_details') {
+        let fitDetailsParsed: RoleCriterionItem[] | null = null;
+        if (typeof value === 'string') {
+          try {
+            const parsed = JSON.parse(value);
+            if (Array.isArray(parsed) && parsed.every(item => typeof item.text === 'string' && typeof item.met === 'boolean' && typeof item.explanation === 'string')) {
+              fitDetailsParsed = parsed;
+            }
+          } catch (error) {
+            // console.warn("[GuideDisplayStep] Failed to parse fit_assessment_details (string) for section_4:", error);
+          }
+        } else if (Array.isArray(value) && value.every(item => item && typeof item.text === 'string' && typeof item.met === 'boolean' && typeof item.explanation === 'string')) {
+          fitDetailsParsed = value as RoleCriterionItem[];
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) { // Handle if it's a single object instead of array
+            const singleItem = value as RoleCriterionItem;
+            if (singleItem && typeof singleItem.text === 'string' && typeof singleItem.met === 'boolean' && typeof singleItem.explanation === 'string') {
+                fitDetailsParsed = [singleItem];
+            }
+        }
+
+        if (fitDetailsParsed && fitDetailsParsed.length > 0) {
+          elements.push(<div key={key} className='mb-6'><h4 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h4><RoleCriterionDisplay items={fitDetailsParsed} /></div>);
+        } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) { 
+          elements.push(<div key={key} className="mb-4"><strong className="text-md font-semibold text-gray-900 block mb-2">{title}:</strong>{renderObject(value, 0, true)}</div>);
+        } else if (value && (typeof value === 'string' || Array.isArray(value))) { 
+           elements.push(renderKeyValue(title, value, typeof value === 'string' && value.length > 80));
+        } else if (value) {
+           elements.push(renderKeyValue(title, String(value)));
+        }
+      } else if (key === 'key_responsibilities_summary' && Array.isArray(value)) {
+        elements.push(
+          <div key={key} className="mb-4">
+            <strong className="text-md font-semibold text-gray-900 block mb-2">{title}:</strong>
+            {value.length > 0 ? (
+              <ul className="list-disc pl-6 mt-1 space-y-1">
+                {value.map((item: string, index: number) => (
+                  <li key={index} className="text-base text-gray-700 leading-relaxed">{item}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-base text-gray-700 leading-relaxed italic">N/A</p>
+            )}
+          </div>
+        );
+      } else {
+        elements.push(renderKeyValue(title, value, typeof value === 'string' && value.length > 80));
+      }
+    }
+    displayContent = <div className="space-y-4">{elements}</div>;
+  } else if (sectionKey === 'section_5_star_story_bank') {
+    const storyBankContent = content as StarStoryBankSectionModel;
+    if (storyBankContent.stories && storyBankContent.stories.length > 0) {
+      const displayStories: StoryDisplayItem[] = storyBankContent.stories.map((story: StarStoryItem, index: number) => ({
+        title: story.behavioral_question || story.title || `STAR Story ${index + 1}`,
+        competency: story.competency || 'N/A',
+        behavioralQuestion: story.behavioral_question || 'N/A',
+        situation: story.situation || 'N/A',
+        task: story.task || 'N/A',
+        action: story.action || 'N/A',
+        result: story.result || 'N/A',
+        interviewer_advice: story.interviewer_advice || 'N/A',
+        tags: story.tags || [],
+        key_contributions: story.key_contributions || [],
+        skills_demonstrated: story.skills_demonstrated || [],
+        tailoring_suggestions: story.tailoring_suggestions || [],
+      }));
+      displayContent = <StoryBankDisplay stories={displayStories} />;
+    } else {
+      displayContent = <p className="text-gray-500">No STAR stories available for this section.</p>;
+    }
+  } else if (sectionKey === 'section_6_technical_case_prep') {
+    const techCaseContent = content as TechnicalCasePrepSectionModel;
+    let displayPrompt: string | undefined = undefined;
+    let displaySampleAnswer: string | undefined = undefined;
+    let displayCaseWalkthrough: CaseStep | undefined = undefined;
+    let displayGlossary: Array<{ term: string; definition: string }> | undefined = undefined;
+
+    if (techCaseContent && techCaseContent.prompts && techCaseContent.prompts.length > 0) {
+      const firstPrompt = techCaseContent.prompts[0] as TechnicalCasePrepPromptItem;
+      if (firstPrompt) {
+        displayPrompt = firstPrompt.question;
+        displaySampleAnswer = firstPrompt.sample_answer;
+      }
+    }
+
+    if (techCaseContent && typeof techCaseContent.sample_case_walkthrough === 'string') {
+      const walkthroughText = techCaseContent.sample_case_walkthrough;
+      const problemMatch = walkthroughText.match(/###\s*Problem\s*([\s\S]*?)(?=###\s*Approach|$)/i);
+      const approachMatch = walkthroughText.match(/###\s*Approach\s*([\s\S]*?)(?=###\s*Solution|$)/i);
+      const solutionMatch = walkthroughText.match(/###\s*Solution\s*([\s\S]*)/i);
+
+      const problemText = problemMatch ? problemMatch[1].trim() : '';
+      const approachText = approachMatch ? approachMatch[1].trim() : '';
+      const solutionText = solutionMatch ? solutionMatch[1].trim() : '';
+      
+      const approachStepsArray = approachText ? approachText.split(/\r?\n/).map((step: string) => step.trim()).filter((step: string) => step) : [];
+
+      if (problemText || approachStepsArray.length > 0 || solutionText) {
+        displayCaseWalkthrough = {
+          problem: problemText,
+          approach: approachStepsArray, 
+          solution: solutionText,
+        };
+      }
+    }
+
+    if (techCaseContent && techCaseContent.key_terms_glossary && techCaseContent.key_terms_glossary.length > 0) {
+      displayGlossary = techCaseContent.key_terms_glossary
+        .filter((item: KeyTermItem) => typeof item.term === 'string' && typeof item.definition === 'string')
+        .map((item: KeyTermItem) => ({
+          term: item.term!,
+          definition: item.definition!,
+        }));
+    }
+    
+    if (displayPrompt || displaySampleAnswer || displayCaseWalkthrough || (displayGlossary && displayGlossary.length > 0)) {
+      displayContent = (
+        <TechnicalCasePrepDisplay
+          prompt={displayPrompt}
+          sampleAnswer={displaySampleAnswer}
+          caseWalkthrough={displayCaseWalkthrough} 
+          glossary={displayGlossary} 
+        />
+      );
+    } else {
+      displayContent = <p className="text-gray-500">No technical or case prep information available for this section.</p>;
+    }
+  } else if (sectionKey === 'section_7_mock_interview') {
+    const mockInterviewContent = content as MockInterviewSectionModel;
+    if (mockInterviewContent.questions && mockInterviewContent.questions.length > 0) {
+      const questions = mockInterviewContent.questions.map((q: MockInterviewQuestionItem, index: number) => (
+        <div key={index} className="mb-4 p-4 bg-gray-50 rounded-lg">
+          <p className="font-semibold text-gray-700">{q.question}</p>
+          {q.sample_answer && <p className="text-sm text-gray-600 mt-1 whitespace-pre-line"><strong>Sample Answer:</strong> {q.sample_answer}</p>}
+          {q.tips && q.tips.length > 0 && (
+            <div className="mt-2">
+              <p className="text-xs font-semibold text-gray-500">Tips:</p>
+              <ul className="list-disc list-inside pl-2 text-xs text-gray-500">
+                {q.tips.map((tip: string, tipIndex: number) => <li key={tipIndex}>{tip}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      ));
+      displayContent = <div className="space-y-4">{questions}</div>;
+    } else {
+      displayContent = <p className="text-gray-500">No mock interview questions available.</p>;
+    }
+  } else if (sectionKey === 'section_8_insider_cheat_sheet') {
+    const cheatSheetContent = content as InsiderCheatSheetSectionModel;
+    const elements: React.ReactNode[] = [];
+    const propertyOrder: (keyof InsiderCheatSheetSectionModel)[] = ['culture_cues', 'recent_exec_quotes', 'financial_snapshot', 'glassdoor_pain_points'];
+    
+    for (const key of propertyOrder) {
+      const value = cheatSheetContent[key];
+      if (value === undefined || value === null && key !== 'financial_snapshot') continue;
+      const title = (key as string).split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      
+      if (Array.isArray(value)) {
+        if (key === 'recent_exec_quotes') {
+          elements.push(
+            <div key={key} className="mb-4">
+              <strong className="text-md font-semibold text-gray-900 block mb-2">{title}:</strong>
+              {value.length > 0 ? (
+                <ul className="list-disc pl-6 mt-1 space-y-1">
+                  {(value as { quote: string; speaker: string; context_url?: string }[]).map((item, index) => (
+                    <li key={`${key}-${index}`} className="text-base text-gray-700 leading-relaxed mb-2">
+                      <p className="italic">"{item.quote}"</p>
+                      <p className="text-sm text-gray-600">- {item.speaker}</p>
+                      {item.context_url && (
+                        <a href={item.context_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+                          Source
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-base text-gray-700 leading-relaxed italic">N/A</p>
+              )}
+            </div>
+          );
+        } else { // For other arrays like culture_cues, glassdoor_pain_points
+          elements.push(
+            <div key={key} className="mb-4">
+              <strong className="text-md font-semibold text-gray-900 block mb-2">{title}:</strong>
+              {value.length > 0 ? (
+                <ul className="list-disc pl-6 mt-1 space-y-1">
+                  {value.map((item: string, index: number) => (
+                    <li key={`${key}-${index}`} className="text-base text-gray-700 leading-relaxed">{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-base text-gray-700 leading-relaxed italic">N/A</p>
+              )}
+            </div>
+          );
+        }
+      } else if (key === 'financial_snapshot') {
+         elements.push(<div key={key}>{renderKeyValue(title, value || "N/A")}</div>);
+      } else {
+        elements.push(<div key={key}>{renderKeyValue(title, value, typeof value === 'string' && value.length > 80)}</div>);
+      }
+    }
+    displayContent = <div className="space-y-4">{elements}</div>;
+  } else if (sectionKey === 'section_9_questions_to_ask') {
+    const questionsToAskContent = content as QuestionsToAskSectionModel;
+    const elements: React.ReactNode[] = [];
+    const categoryOrder: (keyof QuestionsToAskSectionModel)[] = ['for_hiring_manager', 'for_peers_team', 'for_leadership', 'general_questions'];
+
+    for (const categoryKey of categoryOrder) {
+      const questionsInCategory = questionsToAskContent[categoryKey];
+      if (questionsInCategory && Array.isArray(questionsInCategory) && questionsInCategory.length > 0) {
+        const categoryTitle = (categoryKey as string)
+          .replace('for_', 'For ')
+          .split('_')
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+        
+        elements.push(
+          <div key={categoryKey} className="mb-6">
+            <h4 className="text-xl font-semibold text-gray-800 mb-3">{categoryTitle}</h4>
+            <ul className="list-disc pl-6 space-y-2">
+              {questionsInCategory.map((question: string, index: number) => (
+                <li key={index} className="text-base text-gray-700 leading-relaxed">{question}</li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+    }
+    if (elements.length > 0) {
+      displayContent = <div className="space-y-6">{elements}</div>;
+    } else {
+      displayContent = <p className="text-gray-500">No suggested questions to ask are available.</p>;
+    }
+  } else if (sectionKey === 'section_10_offer_negotiation') {
+    const offerNegotiationContent = content as OfferNegotiationSectionModel;
+    const elements: React.ReactNode[] = [];
+    const propertyOrder: (keyof OfferNegotiationSectionModel)[] = ['negotiation_levers', 'salary_research_summary', 'counter_offer_strategy', 'walk_away_point', 'non_salary_benefits_to_consider', 'timeline_and_communication_tips'];
+    if (offerNegotiationContent.expected_salary_range) {
+      elements.push(
+        renderKeyValue(
+          'Expected Salary Range',
+          `Min: ${offerNegotiationContent.expected_salary_range.min_salary}, Max: ${offerNegotiationContent.expected_salary_range.max_salary}, Currency: ${offerNegotiationContent.expected_salary_range.currency}`
+        )
+      );
+    }
+    for (const key of propertyOrder) {
+      const value = offerNegotiationContent[key];
+      if (value === undefined || value === null) continue;
+      const title = (key as string).split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      elements.push(renderKeyValue(title, value, typeof value === 'string' && value.length > 80));
+    }
+    displayContent = <div className="space-y-4">{elements}</div>;
+  } else if (sectionKey === 'section_0_welcome' || sectionKey === 'section_11_export_share') {
+    displayContent = renderObject(content, 0);
+  } else {
+    // console.warn(`[GuideDisplayStep] Unhandled section key: ${sectionKey}. Using default object rendering.`);
+    displayContent = renderObject(content, 0);
   }
 
   return (
-    <div id={String(sectionKey)} className="mb-6 scroll-mt-20"> 
-      <div 
-        className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 rounded-t-lg flex justify-between items-center cursor-pointer shadow-md hover:shadow-lg transition-shadow duration-200"
+    <div id={sectionKey.toString()} className="mb-12 p-6 bg-white rounded-xl shadow-lg border border-gray-200">
+      <button
         onClick={toggleCollapsed}
+        className="w-full flex justify-between items-center text-left text-2xl font-semibold text-gray-800 mb-4 focus:outline-none"
       >
         <div className="flex items-center">
-          <IconComponent className="h-6 w-6 text-white mr-3" />
-          <h3 className="text-lg font-bold text-white">{title}</h3>
+          <IconComponent className="h-7 w-7 mr-3 text-indigo-600" />
+          {title}
         </div>
-        {isCollapsed ? <ChevronDownIcon className="h-6 w-6 text-white" /> : <ChevronUpIcon className="h-6 w-6 text-white" />}
-      </div>
+        {isCollapsed ? <ChevronDownIcon className="h-6 w-6 text-gray-500" /> : <ChevronUpIcon className="h-6 w-6 text-gray-500" />}
+      </button>
       {!isCollapsed && (
-        <div className="bg-white p-5 rounded-b-lg shadow-md border-x border-b border-gray-200"> 
+        <div className="mt-4 prose prose-indigo max-w-none prose-p:text-gray-700 prose-li:text-gray-700 prose-headings:text-gray-800 prose-strong:text-gray-700 leading-relaxed text-base">
           {displayContent}
         </div>
       )}
     </div>
   );
-};
+}
 
 // Table of Contents Component
 const TableOfContents: React.FC<{ sections: Array<{ id: string, title: string, hasContent: boolean }> }> = ({ sections }) => {
@@ -315,18 +612,18 @@ const GuideDisplayStep: React.FC = () => {
   return (
     <div className="max-w-screen-2xl mx-auto"> {/* Changed from max-w-7xl to max-w-screen-2xl */} 
       <div className="bg-white rounded-xl shadow-lg px-4 py-6 md:px-6 md:py-8 mb-8"> {/* Adjusted padding */} 
-        <h2 className="text-2xl font-bold text-center text-indigo-700 mb-8 pb-4 border-b border-gray-200">Your Personalized Interview Guide</h2>
+        <h2 className="text-3xl font-bold text-center text-indigo-700 mb-8 pb-4 border-b border-gray-200">Your Personalized Interview Guide</h2>
         
         <div className="md:flex md:gap-8">
           {/* Table of Contents - Sticky on desktop */}
-          <div className="md:w-1/5 mb-6 md:mb-0">  
+          <div className="md:w-64 flex-none mb-6 md:mb-0">  
             <div className="hidden md:block">
               <TableOfContents sections={sections.filter(s => s.hasContent)} />
             </div>
           </div>
           
           {/* Main Content */}
-          <div className="md:w-4/5"> 
+          <div className="flex-1"> 
             {renderSection('Company & Industry Insights', section_1_company_industry, 'section_1_company_industry', () => toggleSection('section_1_company_industry'), !expandedSections.includes('section_1_company_industry'))} 
             {renderSection('Calendar Invites & Scheduling', section_2_calendar_invites, 'section_2_calendar_invites', () => toggleSection('section_2_calendar_invites'), !expandedSections.includes('section_2_calendar_invites'))}
             {renderSection('Understanding Role Success', section_3_role_success, 'section_3_role_success', () => toggleSection('section_3_role_success'), !expandedSections.includes('section_3_role_success'))}
