@@ -20,7 +20,7 @@ interface UploadResumeResponseData {  // If this causes issues, ensure it's corr
 
 // Define the base URL for your backend API
 // IMPORTANT: Replace with your actual backend URL if different
-const API_BASE_URL = 'http://localhost:8000'; // Common default for FastAPI
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'; // Use env variable or fallback
 
 /**
  * Helper function to handle API requests.
